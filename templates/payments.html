@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Payments{% endblock %}
+{% block content %}
+<h1>Payments</h1>
+<ul>
+    {% for payment in payments %}
+    <li>Vehicle {{ payment.log.vehicle_number }} - Paid {{ payment.amount }} on {{ payment.payment_time }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-
-{% block title %}
-log
-{% endblock %}
-
+{% block title %}Vehicle Logs{% endblock %}
 {% block content %}
-<h1>Log Page</h1>
+<h1>Vehicle Logs</h1>
+<ul>
+    {% for log in logs %}
+    <li>{{ log.vehicle_number }} entered at {{ log.entry_time }}{% if log.exit_time %}, exited at {{ log.exit_time }}{% endif %}</li>
+    {% endfor %}
+</ul>
 {% endblock %}
-

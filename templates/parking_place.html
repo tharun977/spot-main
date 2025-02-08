@@ -1,31 +1,15 @@
 {% extends 'base.html' %}
-
-{% block title %}
-Parking Place
-{% endblock %}
-
+{% block title %}Parking Places{% endblock %}
 {% block content %}
-<h1 class="text-center" >Parking Place</h1>
-<hr>
-
-<div class="container text-center bg-light p-3">
-    
-
-{% for p in parking_place %}
-
-
-<div class="card text-center mx-3 my-3 " style="width: 18rem; display: inline-block; margin: 10px;">
-    <img src="{{ p.image.url }}" class="card-img-top" alt="...">
-    <div class="card-body">
-    <h5 class="card-title"><b>{{ p.place_name }}<b>  </h5>
-    <h6 class="card-text">{{p.location}}</h6>
-    <h6 class="card-text">Total Capacity: {{p.capacity}}</h6>
-    </div>
-</div>
-
-
-{% endfor %}
-</div>
-
+<h1>Parking Places</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Add Parking Place</button>
+</form>
+<ul>
+    {% for parking_place in parking_places %}
+    <li>{{ parking_place.location }} - {{ parking_place.available_slots }} available slots</li>
+    {% endfor %}
+</ul>
 {% endblock %}
-
