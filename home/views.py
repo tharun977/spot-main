@@ -3,7 +3,9 @@ from .models import ParkingPlace, Log, Payment
 from .forms import ParkingPlaceForm, PaymentForm
 
 def home(request):
-    return render(request, 'home.html')
+    pages = ["home", "parking_place", "log", "about", "contact", "payments"]
+    return render(request, 'home.html', {"pages": pages})
+
 
 def parking_place(request):
     if request.method == "POST":

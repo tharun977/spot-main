@@ -1,15 +1,51 @@
 {% extends 'base.html' %}
 {% block title %}Parking Places{% endblock %}
 {% block content %}
-<h1>Parking Places</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Add Parking Place</button>
-</form>
-<ul>
-    {% for parking_place in parking_places %}
-    <li>{{ parking_place.location }} - {{ parking_place.available_slots }} available slots</li>
-    {% endfor %}
-</ul>
+
+<h2 class="my-4">Manage Parking Places</h2>
+<div class="card p-4 shadow-sm">
+    <h4 class="mb-3">Add a Parking Place</h4>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                {{ form.location.label_tag }}
+                {{ form.location }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.number_of_slots.label_tag }}
+                {{ form.number_of_slots }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.available_slots.label_tag }}
+                {{ form.available_slots }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Parking Place</button>
+    </form>
+</div>
+
+<h3 class="my-4">Available Parking Places</h3>
+
+<table class="table table-striped shadow-sm">
+    <thead class="table-primary">
+        <tr>
+            <th>Location</th>
+            <th>Total Slots</th>
+            <th>Available Slots</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for parking_place in parking_places %}
+        <tr>
+            <td>{{ parking_place.location }}</td>
+            <td>{{ parking_place.number_of_slots }}</td>
+            <td>{{ parking_place.available_slots }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="text-center">No parking places available.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 {% endblock %}
