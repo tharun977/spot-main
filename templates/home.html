@@ -1,32 +1,88 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Welcome to SPOT{% endblock %}
+
 {% block content %}
-<div class="jumbotron text-center my-5">
-    <h1 class="display-4 fw-bold">Welcome to SPOT</h1>
-    <p class="lead">Smart Parking Organisation Tool</p>
+<!-- Hero Section with Background -->
+<div class="jumbotron text-center my-5 hero-section">
+    <h1 class="display-3 fw-bold animated fadeInDown">Welcome to SPOT</h1>
+    <p class="lead animated fadeIn">Smart Parking Organisation Tool</p>
     <hr class="my-4">
-    <p>Effortlessly manage parking spaces, logs, and payments with our intuitive system.</p>
-    <a class="btn btn-primary btn-lg" href="{% url 'about' %}">Learn More</a>
+    <p class="animated fadeIn">Effortlessly manage parking spaces, logs, and payments with our intuitive system.</p>
+    <a class="btn btn-primary btn-lg animated fadeInUp" href="{% url 'about' %}">Learn More</a>
 </div>
 
-<div>
-    <h2 class="my-4 text-center">Our Features</h2>
+<!-- Features Section with Background -->
+<div class="features-section text-white">
+    <h2 class="my-4 text-center animated fadeIn">Our Features</h2>
     <div class="row">
         <div class="col-md-4 text-center">
-            <i class="fas fa-map-marker-alt fa-3x mb-2"></i>
+            <i class="fas fa-map-marker-alt fa-3x mb-2 animated fadeIn"></i>
             <h3>Find Parking</h3>
             <p>Easily locate and book parking spots.</p>
         </div>
         <div class="col-md-4 text-center">
-            <i class="fas fa-parking fa-3x mb-2"></i>
+            <i class="fas fa-parking fa-3x mb-2 animated fadeIn"></i>
             <h3>Manage Spaces</h3>
             <p>Monitor availability and occupancy.</p>
         </div>
         <div class="col-md-4 text-center">
-            <i class="fas fa-credit-card fa-3x mb-2"></i>
+            <i class="fas fa-credit-card fa-3x mb-2 animated fadeIn"></i>
             <h3>Secure Payments</h3>
             <p>Seamlessly process payments online.</p>
         </div>
     </div>
 </div>
+
+<!-- Custom Styling & Animations -->
+<style>
+    /* Hide Scrollbar */
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    body {
+        -ms-overflow-style: none; /* Hide scrollbar in IE & Edge */
+        scrollbar-width: none; /* Hide scrollbar in Firefox */
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 82, 204, 0.8)), 
+                    url('{% static "images/parking_bg.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 5rem 2rem;
+        border-radius: 10px;
+    }
+
+    /* Features Section */
+    .features-section {
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 82, 204, 0.8)), 
+                    url('{% static "images/features_bg.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        padding: 3rem 2rem;
+        border-radius: 10px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animated { animation-duration: 1.5s; }
+    .fadeIn { animation: fadeIn 1.5s ease-in-out; }
+    .fadeInDown { animation: fadeInDown 1.5s ease-in-out; }
+    .fadeInUp { animation: fadeInUp 1.5s ease-in-out; }
+</style>
 {% endblock %}
