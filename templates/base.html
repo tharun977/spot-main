@@ -19,24 +19,24 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg">
-    <div class="container">
-        <a class="navbar-brand text-white" href="{% url 'home' %}">SPOT</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-            <ul class="navbar-nav">
-                {% for page in pages %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url page %}">{{ page|capfirst }}</a>
-                </li>
-                {% endfor %}
-            </ul>            
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">SPOT</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    {% for page in pages %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url page %}">{{ page|capfirst }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
-
+    </nav>
+    
 <div class="container mt-4">
     {% block content %}{% endblock %}
 </div>

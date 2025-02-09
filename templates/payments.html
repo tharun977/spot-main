@@ -1,10 +1,32 @@
 {% extends 'base.html' %}
 {% block title %}Payments{% endblock %}
 {% block content %}
-<h1>Payments</h1>
-<ul>
-    {% for payment in payments %}
-    <li>Vehicle {{ payment.log.vehicle_number }} - Paid {{ payment.amount }} on {{ payment.payment_time }}</li>
-    {% endfor %}
-</ul>
+<h2 class="my-4">Payments</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Parking ID</th>
+            <th>Amount Paid</th>
+            <th>Payment Method</th>
+            <th>Payment Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in payments %}
+        <tr>
+            <td>{{ payment.user_id }}</td>
+            <td>{{ payment.parking_id }}</td>
+            <td>${{ payment.amount_paid }}</td>
+            <td>{{ payment.payment_method }}</td>
+            <td>{{ payment.payment_date }}</td>
+            <td>{{ payment.payment_status|yesno:"Completed,Pending" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center">No payment records found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

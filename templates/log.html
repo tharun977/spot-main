@@ -1,10 +1,24 @@
 {% extends 'base.html' %}
-{% block title %}Vehicle Logs{% endblock %}
+{% block title %}Logs{% endblock %}
 {% block content %}
-<h1>Vehicle Logs</h1>
-<ul>
-    {% for log in logs %}
-    <li>{{ log.vehicle_number }} entered at {{ log.entry_time }}{% if log.exit_time %}, exited at {{ log.exit_time }}{% endif %}</li>
-    {% endfor %}
-</ul>
+<h2 class="my-4">Logs</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.user_id }}</td>
+            <td>{{ log.timestamp }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="2" class="text-center">No logs found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
