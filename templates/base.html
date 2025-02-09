@@ -3,51 +3,95 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}SPOT - Smart Parking{% endblock %}</title>
+    <title>{% block title %}{% endblock %} | SPOT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Smart Parking Organisation Tool - Manage Parking Easily">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         body { font-family: 'Roboto', sans-serif; }
-        .navbar { background-color: #007bff; }
-        .navbar-nav .nav-link { color: #ffffff; }
-        footer { background-color: #007bff; color: #ffffff; padding: 10px 0; text-align: center; }
-        .btn-primary { background-color: #007bff; border: none; }
-        .btn-primary:hover { background-color: #0056b3; }
+        .navbar { background-color: #007bff; padding: 15px; }
+        .navbar-nav .nav-link { color: #ffffff; font-weight: 500; }
+        .navbar-nav .nav-link:hover { background-color: #0056b3; border-radius: 5px; }
+        footer { background-color: #007bff; color: #ffffff; padding: 10px; text-align: center; }
     </style>
 </head>
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">SPOT</a>
+            <a class="navbar-brand fw-bold mx-auto" href="{% url 'home' %}">SPOT</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <ul class="navbar-nav">
-                    {% for page in pages %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url page %}">{{ page|capfirst }}</a>
-                    </li>
-                    {% endfor %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'parking_places' %}">Parking Places</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logs' %}">Logs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'payments' %}">Payments</a></li>
                 </ul>
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="btn btn-outline-light ms-3">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </div>
     </nav>
     
-<div class="container mt-4">
+
+<section class="container my-5">
     {% block content %}{% endblock %}
-</div>
+</section>
 
 <footer>
     <div class="container">
-        <p>© 2025 SPOT. All Rights Reserved.</p>
+        <p>© 2025 SPOT - Smart Parking Organisation Tool. All Rights Reserved.</p>
     </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
 
-</body>
-</html>
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+
+        if (body.classList.contains('dark-theme')) {
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            localStorage.setItem('theme', 'dark'); // Save preference
+        } else {
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', 'light'); // Save preference
+        }
+    });
+
+    // Load saved theme preference
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-theme');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+</script>
+
+<style>
+    .dark-theme {
+        background-color: #2e2e2e;
+        color: #ffffff;
+    }
+    .dark-theme .navbar {
+        background-color: #1f1f1f;
+    }
+    .dark-theme .navbar-nav .nav-link {
+        color: #ffffff;
+    }
+    .dark-theme .navbar-nav .nav-link:hover {
+        background-color: #3a3a3a;
+    }
+    .dark-theme footer {
+        background-color: #1f1f1f;
+        color: #ffffff;
+    }
+</style>

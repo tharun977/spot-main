@@ -1,17 +1,23 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% block title %}Parking Places{% endblock %}
 {% block content %}
-<h2 class="my-4">Manage Parking Places</h2>
+<h2 class="my-4 text-center">Manage Parking Places</h2>
 
 <form method="post" class="mb-4">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Add Parking Place</button>
+    <div class="row g-3">
+        <div class="col-md-6">{{ form.place_name|as_crispy_field }}</div>
+        <div class="col-md-6">{{ form.location|as_crispy_field }}</div>
+        <div class="col-md-4">{{ form.capacity|as_crispy_field }}</div>
+        <div class="col-md-4">{{ form.available_spaces|as_crispy_field }}</div>
+        <div class="col-md-4">{{ form.status|as_crispy_field }}</div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Add Parking Place</button>
 </form>
 
 <h3>Available Parking Places</h3>
-
-<table class="table table-striped">
+<table class="table table-striped table-bordered text-center">
     <thead>
         <tr>
             <th>Place Name</th>
@@ -28,12 +34,17 @@
             <td>{{ parking_place.place_name }}</td>
             <td>{{ parking_place.location }}</td>
             <td>{{ parking_place.capacity }}</td>
-            <td>{{ parking_place.available_spaces }}</td>  <!-- Displays available spaces -->
+            <td>{{ parking_place.available_spaces }}</td>
             <td>{{ parking_place.status|yesno:"Active,Inactive" }}</td>
             <td>
-                <a href="{% url 'delete_parking_place' parking_place.id %}" class="btn btn-danger btn-sm">
-                    Delete
-                </a>
+                <!-- Edit Button -->
+                <a href="{% url 'edit_parking_place' parking_place.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                
+                <!-- Delete Button -->
+                <form method="post" action="{% url 'delete_parking_place' parking_place.pk %}" class="d-inline" onsubmit="return confirmDelete();">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
             </td>
         </tr>
         {% empty %}
@@ -41,4 +52,11 @@
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Confirm Delete Script -->
+<script>
+    function confirmDelete() {
+        return confirm("Do you want to delete this parking place?");
+    }
+</script>
 {% endblock %}

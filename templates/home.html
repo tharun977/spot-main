@@ -1,31 +1,31 @@
 {% extends 'base.html' %}
 {% block title %}Welcome to SPOT{% endblock %}
 {% block content %}
-<div class="jumbotron text-center">
-    <h1 class="display-4">Welcome to SPOT</h1>
-    <p class="lead">Smart Parking Organisation Tools</p>
+<div class="jumbotron text-center my-5">
+    <h1 class="display-4 fw-bold">Welcome to SPOT</h1>
+    <p class="lead">Smart Parking Organisation Tool</p>
     <hr class="my-4">
-    <p>Our mission is to simplify parking management with innovative, user-friendly tools designed to improve efficiency and convenience.</p>
-    <a class="btn btn-primary btn-lg" href="{% url 'about' %}" role="button">Learn more</a>
+    <p>Effortlessly manage parking spaces, logs, and payments with our intuitive system.</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'about' %}">Learn More</a>
 </div>
 
 <div>
-    <h2 class="my-4">Our Features</h2>
+    <h2 class="my-4 text-center">Our Features</h2>
     <div class="row">
         <div class="col-md-4 text-center">
-            <i class="fas fa-map-marker-alt fa-3x"></i>
+            <i class="fas fa-map-marker-alt fa-3x mb-2"></i>
             <h3>Find Parking</h3>
-            <p>Quickly locate and reserve parking spots.</p>
+            <p>Easily locate and book parking spots.</p>
         </div>
         <div class="col-md-4 text-center">
-            <i class="fas fa-parking fa-3x"></i>
+            <i class="fas fa-parking fa-3x mb-2"></i>
             <h3>Manage Spaces</h3>
-            <p>Efficiently manage parking spaces and availability.</p>
+            <p>Monitor availability and occupancy.</p>
         </div>
         <div class="col-md-4 text-center">
-            <i class="fas fa-credit-card fa-3x"></i>
-            <h3>Process Payments</h3>
-            <p>Securely handle payments for parking services.</p>
+            <i class="fas fa-credit-card fa-3x mb-2"></i>
+            <h3>Secure Payments</h3>
+            <p>Seamlessly process payments online.</p>
         </div>
     </div>
 </div>
