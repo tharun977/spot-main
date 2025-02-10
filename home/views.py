@@ -27,6 +27,15 @@ def manage_parking_places(request):
         {'place_form': place_form, 'parking_places': parking_places}
     )
 
+def parking_place_detail(request, pk):
+    parking_place = get_object_or_404(ParkingPlace, pk=pk)
+    parking_fees = ParkingFee.objects.filter(place=parking_place)
+
+    return render(request, 'parking_place_detail.html', {
+        'parking_place': parking_place,
+        'parking_fees': parking_fees
+    })
+
 
 def manage_parking_fees(request):
     """ View for managing parking fees separately """
@@ -53,7 +62,7 @@ def edit_parking_place(request, pk):
         form = ParkingPlaceForm(request.POST, instance=parking_place)
         if form.is_valid():
             form.save()
-            return redirect('parking_places')
+            return redirect('manage_parking_places')
     else:
         form = ParkingPlaceForm(instance=parking_place)
     
@@ -63,8 +72,7 @@ def delete_parking_place(request, pk):
     parking_place = get_object_or_404(ParkingPlace, pk=pk)
     if request.method == "POST":
         parking_place.delete()
-        return redirect('parking_places')
-    return render(request, 'delete_parking_place.html', {'parking_place': parking_place})
+        return redirect('manage_parking_places')
 
 def payments(request):
     payments = PaymentDetails.objects.all()

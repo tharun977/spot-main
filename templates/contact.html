@@ -1,7 +1,25 @@
 {% extends 'base.html' %}
+
 {% block title %}Contact Us{% endblock %}
 
 {% block content %}
+<!-- Add CSS to hide the scrollbar but allow scrolling -->
+<style>
+    /* Hide the scrollbar but still allow scrolling */
+    html, body {
+        overflow: hidden;
+    }
+
+    body::-webkit-scrollbar {
+        display: none;
+    }
+
+    body {
+        -ms-overflow-style: none;  /* For Internet Explorer 10+ */
+        scrollbar-width: none;  /* For Firefox */
+    }
+</style>
+
 <div class="container my-5">
     <h2 class="text-center">Contact Us</h2>
     <p class="text-center">We'd love to hear from you! Please fill out the form below with any questions or feedback.</p>
@@ -33,4 +51,5 @@
         <p><i class="fas fa-phone"></i> Phone: +1234567890</p>
     </div>
 </div>
+
 {% endblock %}
