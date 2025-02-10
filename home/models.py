@@ -15,34 +15,41 @@ class User(models.Model):
         return self.username
     
 
+from django.db import models
+
 class ParkingPlace(models.Model):
-    place_name = models.CharField(max_length=255, unique=True)  # Unique for clarity
+    place_name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
-    capacity = models.PositiveIntegerField()  # PositiveInteger to prevent negatives
-    available_spaces = models.PositiveIntegerField(default=0)
-    status = models.BooleanField(default=True)  # True = Active, False = Inactive
+    capacity = models.IntegerField()
+    available_spaces = models.IntegerField(default=0)
+    status = models.BooleanField(default=True)  # Active/Inactive
 
     def __str__(self):
         return self.place_name
 
-
 class ParkingLot(models.Model):
-    parking_place = models.ForeignKey(
-        ParkingPlace, related_name="lots", on_delete=models.CASCADE , null=True, blank=True
-    )
-    lot_name = models.CharField(max_length=50 , null=True, blank=True)  # Lot A1, B2, etc.
-    status_before = models.CharField(max_length=255, null=True, blank=True)
-    status_after = models.CharField(max_length=255, null=True, blank=True)
+    parking_place = models.ForeignKey(ParkingPlace, on_delete=models.CASCADE, related_name="lots" ,null=True)
+    lot_name = models.CharField(max_length=50 , null=True)  # Example: "A1", "B2"
+    status = models.BooleanField(default=True)  # Available/Occupied
 
     def __str__(self):
-        return f"{self.lot_name} in {self.parking_place}"
-
+        return f"{self.lot_name} ({self.parking_place})"
 
 class VehicleType(models.Model):
-    vehicle_type = models.CharField(max_length=50, unique=True)  # Unique to prevent duplicates
-    id = models.AutoField(primary_key=True)
+    vehicle_type = models.CharField(max_length=50)
+
     def __str__(self):
         return self.vehicle_type
+
+class AllowedVehicleType(models.Model):
+    parking_place = models.ForeignKey(ParkingPlace, on_delete=models.CASCADE, related_name="allowed_vehicle_types")
+    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('parking_place', 'vehicle_type')
+
+    def __str__(self):
+        return f"{self.vehicle_type} allowed in {self.parking_place}"
 
 
 class ParkingDetails(models.Model):

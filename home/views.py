@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, LogDetails, VehicleType
-from .forms import ParkingPlaceForm, PaymentForm, UserForm  # Ensure UserForm exists
+from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, LogDetails, VehicleType ,AllowedVehicleType
+from .forms import ParkingPlaceForm, PaymentForm, UserForm   , ParkingLotFormSet
 
 def home(request):
     return render(request, 'home.html')
@@ -10,22 +10,36 @@ from .forms import ParkingPlaceForm, ParkingFeeForm
 from .models import ParkingPlace, ParkingFee
 
 def manage_parking_places(request):
-    """ View for managing parking places only """
-    if request.method == 'POST':
+    if request.method == "POST":
         place_form = ParkingPlaceForm(request.POST)
-        if place_form.is_valid():
-            place_form.save()
+        lot_formset = ParkingLotFormSet(request.POST)
+
+        if place_form.is_valid() and lot_formset.is_valid():
+            parking_place = place_form.save()
+
+            # Save allowed vehicle types
+            for vehicle_type in place_form.cleaned_data['allowed_vehicle_types']:
+                AllowedVehicleType.objects.create(parking_place=parking_place, vehicle_type=vehicle_type)
+
+            # Save parking lots
+            lots = lot_formset.save(commit=False)
+            for lot in lots:
+                lot.parking_place = parking_place
+                lot.save()
+
             return redirect('manage_parking_places')
+
     else:
         place_form = ParkingPlaceForm()
+        lot_formset = ParkingLotFormSet()
 
     parking_places = ParkingPlace.objects.all()
 
-    return render(
-        request, 
-        'manage_parking_places.html', 
-        {'place_form': place_form, 'parking_places': parking_places}
-    )
+    return render(request, 'manage_parking_places.html', {
+        'place_form': place_form,
+        'lot_formset': lot_formset,
+        'parking_places': parking_places
+    })
 
 def parking_place_detail(request, pk):
     parking_place = get_object_or_404(ParkingPlace, pk=pk)
