@@ -58,23 +58,26 @@
             <td colspan="6">
                 <div class="details-container">
                     <h5>{{ parking_place.place_name }} - Details</h5>
-                    <p><strong>Lot ID:</strong> {{ parking_place.lot_id }}</p>
-                    <p><strong>Place ID:</strong> {{ parking_place.pk }}</p>
-                    <p><strong>Vehicle Type ID:</strong> {{ parking_place.lvehicle_type_id }}</p>
-                    <p><strong>Status:</strong> {{ parking_place.status|yesno:"Active,Inactive" }}</p>
 
-                    {% with parking_fees|dictsort:"vehicle_type" as sorted_fees %}
-                        {% if sorted_fees %}
-                            <h6 class="mt-3">Parking Fees:</h6>
-                            <ul class="list-unstyled">
-                                {% for fee in sorted_fees %}
-                                    {% if fee.parking_place == parking_place %}
-                                        <li>🚗 {{ fee.vehicle_type }}: ₹{{ fee.fee }}</li>
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-                    {% endwith %}
+                    <!-- Lots inside the parking place -->
+                    <h6 class="mt-3">Parking Lots:</h6>
+                    <ul>
+                        {% for lot in parking_place.lots.all %}
+                            <li><strong>Lot Name:</strong> {{ lot.lot_name }} | <strong>Place ID:</strong> {{ lot.pk }}</li>
+                        {% empty %}
+                            <li>No lots available.</li>
+                        {% endfor %}
+                    </ul>
+
+                    <!-- Vehicle Types -->
+                    <h6 class="mt-3">Vehicle Types Allowed:</h6>
+                    <ul>
+                        {% for vehicle_type in parking_place.vehicle_types.all %}
+                            <li>{{ vehicle_type.vehicle_type }}</li>
+                        {% empty %}
+                            <li>No vehicle types assigned.</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </td>
         </tr>
