@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+
 {% block title %}Edit Parking Place{% endblock %}
 
 {% block content %}
@@ -14,6 +15,19 @@
             <div class="col-md-4">{{ form.capacity|as_crispy_field }}</div>
             <div class="col-md-4">{{ form.available_spaces|as_crispy_field }}</div>
             <div class="col-md-4">{{ form.status|as_crispy_field }}</div>
+
+            <!-- Parking Lots -->
+            <div class="col-md-12">
+                <label class="form-label">Parking Lots</label>
+                <input type="text" name="lots" class="form-control" value="{% for lot in parking_place.lots.all %}{{ lot.lot_name }},{% endfor %}">
+                <small class="text-muted">Separate multiple lots with commas (e.g., A1, B2, C3)</small>
+            </div>\
+            
+            <!-- Allowed Vehicle Types -->
+            <div class="col-md-12">
+                <label class="form-label">Allowed Vehicle Types</label>
+                {{ form.vehicle_types }}
+            </div>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
         <a href="{% url 'manage_parking_places' %}" class="btn btn-secondary mt-3">Cancel</a>

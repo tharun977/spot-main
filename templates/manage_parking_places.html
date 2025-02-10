@@ -38,7 +38,8 @@
             <th>Capacity</th>
             <th>Available Spaces</th>
             <th>Status</th>
-            <th>Allowed Vehicle Types</th>
+            <th>Lots</th>
+            <th>Allowed Vehicles</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -51,10 +52,19 @@
             <td>{{ parking_place.available_spaces }}</td>
             <td>{{ parking_place.status|yesno:"Active,Inactive" }}</td>
             <td>
-                {% for allowed_type in parking_place.allowed_vehicle_types.all %}
-                    {{ allowed_type.vehicle_type }}{% if not forloop.last %}, {% endif %}
+                {% for lot in parking_place.lots.all %}
+                    {{ lot.lot_name }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    <span class="text-muted">No lots assigned</span>
                 {% endfor %}
-            </td>
+            </td>            
+            <td>
+                {% for vehicle in parking_place.vehicle_types.all %}
+                    {{ vehicle.vehicle_type }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    <span class="text-muted">No vehicle types assigned</span>
+                {% endfor %}
+            </td>            
             <td>
                 <a href="{% url 'edit_parking_place' parking_place.pk %}" class="btn btn-warning btn-sm">Edit</a>
                 <form method="post" action="{% url 'delete_parking_place' parking_place.pk %}" class="d-inline" onsubmit="return confirmDelete();">
@@ -64,9 +74,9 @@
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="7" class="text-center">No parking places available.</td></tr>
+        <tr><td colspan="8" class="text-center">No parking places available.</td></tr>
         {% endfor %}
-    </tbody>
+    </tbody>    
 </table>
 
 <script>

@@ -28,12 +28,16 @@ class ParkingPlace(models.Model):
         return self.place_name
 
 class ParkingLot(models.Model):
-    parking_place = models.ForeignKey(ParkingPlace, on_delete=models.CASCADE, related_name="lots" ,null=True)
-    lot_name = models.CharField(max_length=50 , null=True)  # Example: "A1", "B2"
-    status = models.BooleanField(default=True)  # Available/Occupied
+    parking_place = models.ForeignKey(
+        ParkingPlace, related_name='parking_lots', on_delete=models.CASCADE, null=True, blank=True
+    )
+    lot_name = models.CharField(max_length=50, null=True, blank=True)  # Lot A1, B2, etc.
+    status_before = models.CharField(max_length=255, null=True, blank=True)
+    status_after = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.lot_name} ({self.parking_place})"
+        return f"{self.lot_name} in {self.parking_place}"
+
 
 class VehicleType(models.Model):
     vehicle_type = models.CharField(max_length=50)
