@@ -1,25 +1,51 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, LogDetails, VehicleType
-from .forms import ParkingPlaceForm, PaymentForm, VehicleTypeForm, UserForm  # Ensure UserForm exists
+from .forms import ParkingPlaceForm, PaymentForm, UserForm  # Ensure UserForm exists
 
 def home(request):
     return render(request, 'home.html')
 
-def parking_places(request):
-    if request.method == "POST":
-        form = ParkingPlaceForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('parking_places')
+from django.shortcuts import render, redirect
+from .forms import ParkingPlaceForm, ParkingFeeForm
+from .models import ParkingPlace, ParkingFee
+
+def manage_parking_places(request):
+    """ View for managing parking places only """
+    if request.method == 'POST':
+        place_form = ParkingPlaceForm(request.POST)
+        if place_form.is_valid():
+            place_form.save()
+            return redirect('manage_parking_places')
     else:
-        form = ParkingPlaceForm()
-    
+        place_form = ParkingPlaceForm()
+
     parking_places = ParkingPlace.objects.all()
-    
-    return render(request, 'parking_place.html', {
-        "form": form, 
-        "parking_places": parking_places
-    })
+
+    return render(
+        request, 
+        'manage_parking_places.html', 
+        {'place_form': place_form, 'parking_places': parking_places}
+    )
+
+
+def manage_parking_fees(request):
+    """ View for managing parking fees separately """
+    if request.method == 'POST':
+        fee_form = ParkingFeeForm(request.POST)
+        if fee_form.is_valid():
+            fee_form.save()
+            return redirect('manage_parking_fees')
+    else:
+        fee_form = ParkingFeeForm()
+
+    parking_fees = ParkingFee.objects.all()
+
+    return render(
+        request, 
+        'manage_parking_fees.html', 
+        {'fee_form': fee_form, 'parking_fees': parking_fees}
+    )
+
 
 def edit_parking_place(request, pk):
     parking_place = get_object_or_404(ParkingPlace, pk=pk)

@@ -29,15 +29,15 @@ class ParkingLot(models.Model):
 
 class VehicleType(models.Model):
     vehicle_type_id = models.AutoField(primary_key=True)
-    vehicle_reg_no = models.CharField(max_length=50, unique=True)
     vehicle_type = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"{self.vehicle_type} ({self.vehicle_reg_no})"
+        return f"{self.vehicle_type} "
 
 class ParkingDetails(models.Model):
     place_id = models.ForeignKey(ParkingPlace, on_delete=models.CASCADE)
     lot_id = models.ForeignKey(ParkingLot, on_delete=models.CASCADE)
+    vehicle_reg_no = models.CharField(max_length=50, unique=True,null=True, blank=True)
     vehicle_type_id = models.ForeignKey(VehicleType, on_delete=models.CASCADE)
     in_time = models.DateTimeField(auto_now_add=True)
     out_time = models.DateTimeField(null=True, blank=True)
@@ -46,6 +46,17 @@ class ParkingDetails(models.Model):
 
     def __str__(self):
         return f"Parking {self.place_id} - {self.occupied_by}"
+
+class ParkingFee(models.Model):
+    parking_place = models.ForeignKey(ParkingPlace, on_delete=models.CASCADE)
+    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.CASCADE)
+    fee = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        unique_together = ('parking_place', 'vehicle_type')  # Prevents duplicate entries
+
+    def __str__(self):
+        return f"{self.parking_place} - {self.vehicle_type}: ₹{self.fee}"
 
 class PaymentDetails(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -1,5 +1,5 @@
 from django import forms
-from .models import  User, ParkingPlace, PaymentDetails, VehicleType
+from .models import  User, ParkingPlace, PaymentDetails , ParkingFee
 
 class UserForm(forms.ModelForm):
     class Meta:
@@ -17,7 +17,7 @@ class PaymentForm(forms.ModelForm):
         model = PaymentDetails
         fields = ['user_id', 'parking_id', 'amount_paid', 'payment_method', 'payment_status']
 
-class VehicleTypeForm(forms.ModelForm):
+class ParkingFeeForm(forms.ModelForm):
     class Meta:
-        model = VehicleType
-        fields = ['vehicle_reg_no', 'vehicle_type']
+        model = ParkingFee
+        fields = ['parking_place', 'vehicle_type', 'fee']
