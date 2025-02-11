@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils import timezone  # To set default timestamps
+from django.utils import timezone  
 
 class User(models.Model):
     username = models.CharField(max_length=255, unique=True)
@@ -13,25 +13,24 @@ class User(models.Model):
 
     def __str__(self):
         return self.username
-    
 
-from django.db import models
 
 class ParkingPlace(models.Model):
     place_name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     capacity = models.IntegerField()
     available_spaces = models.IntegerField(default=0)
-    status = models.BooleanField(default=True)  # Active/Inactive
+    status = models.BooleanField(default=True)
 
     def __str__(self):
         return self.place_name
 
-class ParkingLot(models.Model):
+
+class ParkingLot(models.Model):  # ✅ Moved this above ParkingDetails
     parking_place = models.ForeignKey(
         ParkingPlace, related_name='parking_lots', on_delete=models.CASCADE, null=True, blank=True
     )
-    lot_name = models.CharField(max_length=50, null=True, blank=True)  # Lot A1, B2, etc.
+    lot_name = models.CharField(max_length=50, unique=True , null=True)  # Ensuring unique lot names
     status_before = models.CharField(max_length=255, null=True, blank=True)
     status_after = models.CharField(max_length=255, null=True, blank=True)
 
@@ -40,14 +39,19 @@ class ParkingLot(models.Model):
 
 
 class VehicleType(models.Model):
-    vehicle_type = models.CharField(max_length=50)
+    vehicle_type = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.vehicle_type
 
+
 class AllowedVehicleType(models.Model):
-    parking_place = models.ForeignKey(ParkingPlace, on_delete=models.CASCADE, related_name="allowed_vehicle_types")
-    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.CASCADE)
+    parking_place = models.ForeignKey(
+        ParkingPlace, related_name="allowed_vehicle_types", on_delete=models.CASCADE
+    )
+    vehicle_type = models.ForeignKey(
+        VehicleType, related_name="allowed_in_places", on_delete=models.CASCADE
+    )
 
     class Meta:
         unique_together = ('parking_place', 'vehicle_type')
@@ -56,7 +60,7 @@ class AllowedVehicleType(models.Model):
         return f"{self.vehicle_type} allowed in {self.parking_place}"
 
 
-class ParkingDetails(models.Model):
+class ParkingDetails(models.Model):  # ✅ Now `ParkingLot` is defined before this
     place_id = models.ForeignKey(
         ParkingPlace, related_name="parking_details", on_delete=models.CASCADE
     )
@@ -67,7 +71,7 @@ class ParkingDetails(models.Model):
     vehicle_type_id = models.ForeignKey(
         VehicleType, related_name="parked_vehicles", on_delete=models.CASCADE
     )
-    in_time = models.DateTimeField(default=timezone.now)  # Ensures accurate entry timestamps
+    in_time = models.DateTimeField(default=timezone.now)
     out_time = models.DateTimeField(null=True, blank=True)
     parking_duration = models.DurationField(null=True, blank=True)
     occupied_by = models.ForeignKey(
@@ -88,7 +92,7 @@ class ParkingFee(models.Model):
     fee = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
-        unique_together = ('parking_place', 'vehicle_type')  # Prevents duplicate entries
+        unique_together = ('parking_place', 'vehicle_type')
 
     def __str__(self):
         return f"{self.parking_place} - {self.vehicle_type}: ₹{self.fee}"
@@ -106,7 +110,7 @@ class PaymentDetails(models.Model):
         max_length=50, choices=[('Card', 'Card'), ('Cash', 'Cash'), ('Online', 'Online')]
     )
     payment_date = models.DateTimeField(auto_now_add=True)
-    payment_status = models.BooleanField(default=True)  # True = Completed, False = Pending
+    payment_status = models.BooleanField(default=True)  
 
     class Meta:
         verbose_name_plural = "Payments"

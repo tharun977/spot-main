@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, LogDetails, VehicleType ,AllowedVehicleType
+from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, LogDetails, VehicleType , AllowedVehicleType
 from .forms import ParkingPlaceForm, PaymentForm, UserForm   , ParkingLotFormSet
 
 def home(request):
@@ -10,37 +10,20 @@ from .forms import ParkingPlaceForm, ParkingFeeForm
 from .models import ParkingPlace, ParkingFee
 
 def manage_parking_places(request):
-    """ View to create and list parking places along with their parking lots. """
     if request.method == "POST":
         place_form = ParkingPlaceForm(request.POST)
-        lot_formset = ParkingLotFormSet(request.POST)
 
-        if place_form.is_valid() and lot_formset.is_valid():
+        if place_form.is_valid():
             parking_place = place_form.save()
-
-            # ✅ Save allowed vehicle types
-            for vehicle_type in place_form.cleaned_data['vehicle_types']:
-                AllowedVehicleType.objects.create(parking_place=parking_place, vehicle_type=vehicle_type)
-
-            # ✅ Save parking lots while avoiding duplicates
-            lots = lot_formset.save(commit=False)
-            for lot in lots:
-                lot.parking_id = parking_place
-                if not ParkingLot.objects.filter(lot_name=lot.lot_name).exists():  # ✅ Prevent duplicate lots
-                    lot.save()
-
             return redirect('manage_parking_places')
 
     else:
         place_form = ParkingPlaceForm()
-        lot_formset = ParkingLotFormSet()
 
-    # ✅ Corrected prefetch query
-    parking_places = ParkingPlace.objects.prefetch_related('lots').all()
+    parking_places = ParkingPlace.objects.all()
 
     return render(request, 'manage_parking_places.html', {
         'place_form': place_form,
-        'lot_formset': lot_formset,
         'parking_places': parking_places
     })
 
@@ -80,19 +63,23 @@ def edit_parking_place(request, pk):
     if request.method == "POST":
         form = ParkingPlaceForm(request.POST, instance=parking_place)
         if form.is_valid():
-            form.save()  # ✅ Now correctly updates vehicle types!
-            return redirect('manage_parking_places')
-    else:
-        # ✅ Preload existing lots & vehicle types
-        existing_lots = ", ".join([lot.lot_name for lot in parking_place.lots.all()])
-        existing_vehicle_types = parking_place.vehicle_types.all()
+            parking_place = form.save(commit=False)
+            parking_place.save()
 
-        form = ParkingPlaceForm(instance=parking_place, initial={
-            'lots': existing_lots,
-            'vehicle_types': existing_vehicle_types  # ✅ Preload vehicle types correctly
-        })
+            # **Fix: Correctly update allowed vehicle types**
+            AllowedVehicleType.objects.filter(parking_place=parking_place).delete()
+            for vehicle_type in form.cleaned_data['vehicle_types']:
+                AllowedVehicleType.objects.create(parking_place=parking_place, vehicle_type=vehicle_type)
+
+            return redirect('manage_parking_places')
+
+    else:
+        # Preload existing vehicle types
+        existing_vehicle_types = parking_place.allowed_vehicle_types.values_list('vehicle_type', flat=True)
+        form = ParkingPlaceForm(instance=parking_place, initial={'vehicle_types': existing_vehicle_types})
 
     return render(request, 'edit_parking_place.html', {'form': form, 'parking_place': parking_place})
+
 
 
 def delete_parking_place(request, pk):

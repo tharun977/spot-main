@@ -16,13 +16,6 @@
             <div class="col-md-4">{{ form.available_spaces|as_crispy_field }}</div>
             <div class="col-md-4">{{ form.status|as_crispy_field }}</div>
 
-            <!-- Parking Lots -->
-            <div class="col-md-12">
-                <label class="form-label">Parking Lots</label>
-                <input type="text" name="lots" class="form-control" value="{% for lot in parking_place.lots.all %}{{ lot.lot_name }},{% endfor %}">
-                <small class="text-muted">Separate multiple lots with commas (e.g., A1, B2, C3)</small>
-            </div>\
-            
             <!-- Allowed Vehicle Types -->
             <div class="col-md-12">
                 <label class="form-label">Allowed Vehicle Types</label>

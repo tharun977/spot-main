@@ -13,21 +13,9 @@
         {{ place_form|crispy }}
     </div>
 
-    <div class="card p-4 mt-3">
-        <h4>Parking Lots</h4>
-        {{ lot_formset.management_form }}
-        <div id="lot-form-container">
-            {% for form in lot_formset %}
-                <div class="lot-form border p-3 my-2">
-                    {{ form.as_p }}
-                </div>
-            {% endfor %}
-        </div>
-        <button type="button" id="add-lot-form" class="btn btn-secondary mt-2">+ Add More Lots</button>
-    </div>
-
     <button type="submit" class="btn btn-primary mt-3">Add Parking Place</button>
 </form>
+
 
 <h3>Available Parking Places</h3>
 <table class="table table-striped table-bordered text-center">
@@ -38,7 +26,6 @@
             <th>Capacity</th>
             <th>Available Spaces</th>
             <th>Status</th>
-            <th>Lots</th>
             <th>Allowed Vehicles</th>
             <th>Actions</th>
         </tr>
@@ -52,14 +39,7 @@
             <td>{{ parking_place.available_spaces }}</td>
             <td>{{ parking_place.status|yesno:"Active,Inactive" }}</td>
             <td>
-                {% for lot in parking_place.lots.all %}
-                    {{ lot.lot_name }}{% if not forloop.last %}, {% endif %}
-                {% empty %}
-                    <span class="text-muted">No lots assigned</span>
-                {% endfor %}
-            </td>            
-            <td>
-                {% for vehicle in parking_place.vehicle_types.all %}
+                {% for vehicle in parking_place.allowed_vehicle_types.all %}
                     {{ vehicle.vehicle_type }}{% if not forloop.last %}, {% endif %}
                 {% empty %}
                     <span class="text-muted">No vehicle types assigned</span>
@@ -74,7 +54,7 @@
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" class="text-center">No parking places available.</td></tr>
+        <tr><td colspan="7" class="text-center">No parking places available.</td></tr>
         {% endfor %}
     </tbody>    
 </table>

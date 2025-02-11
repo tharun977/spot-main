@@ -1,53 +1,41 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import User, ParkingPlace, PaymentDetails, ParkingFee, ParkingLot, VehicleType
+from .models import User, ParkingPlace, PaymentDetails, ParkingFee, ParkingLot, VehicleType 
 
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'password', 'full_name', 'mobile_number', 'email', 'role']
 
+from django import forms
+from .models import ParkingPlace, VehicleType
+
 class ParkingPlaceForm(forms.ModelForm):
-    lots = forms.CharField(
-        required=False, 
-        help_text="Enter lot names separated by commas (e.g., A1, B2, C3)"
-    )
     vehicle_types = forms.ModelMultipleChoiceField(
         queryset=VehicleType.objects.all(),
         widget=forms.CheckboxSelectMultiple,
-        required=False
+        required=False,
+        label="Allowed Vehicle Types"
     )
 
     class Meta:
         model = ParkingPlace
-        fields = ['place_name', 'location', 'capacity', 'available_spaces', 'status', 'vehicle_types']
+        fields = ['place_name', 'location', 'capacity', 'available_spaces', 'status']
 
     def save(self, commit=True):
         parking_place = super().save(commit=False)
 
         if commit:
-            parking_place.save()  # ✅ Save parking place before adding related data
+            parking_place.save()
 
-            # ✅ Save Parking Lots
-            parking_place.lots.all().delete()  # Remove old lots
-            lot_names = self.cleaned_data['lots'].split(',')
-            for lot_name in lot_names:
-                lot_name = lot_name.strip()
-                if lot_name:
-                    ParkingLot.objects.create(
-                        parking_id=parking_place,
-                        lot_name=lot_name,
-                        status_before="Available",
-                        status_after="Available"
-                    )
-
-            # ✅ Fix Vehicle Types Updating
-            if hasattr(parking_place, 'vehicle_types'):
-                parking_place.vehicle_types.set(self.cleaned_data['vehicle_types'])  # ✅ Correctly update ManyToManyField
+            # **Fix: Update Many-to-Many Relation**
+            parking_place.allowed_vehicle_types.all().delete()  # Remove old relations
+            for vehicle_type in self.cleaned_data['vehicle_types']:
+                parking_place.allowed_vehicle_types.create(vehicle_type=vehicle_type)
 
         return parking_place
-
-
+    
+    
 # Formset for adding multiple Parking Lots dynamically
 ParkingLotFormSet = inlineformset_factory(
     ParkingPlace, ParkingLot,
