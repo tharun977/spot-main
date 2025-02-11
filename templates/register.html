@@ -1,32 +1,109 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <!-- Space for messages to prevent navbar overlap -->
-            <div class="mt-5"></div>  
-            
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-            
-            <div class="card bg-light p-4 shadow-lg">
-                <h2 class="text-center mb-4">Register</h2>
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
-                </form>
-                <div class="text-center mt-3">
-                    Already have an account? <a href="{% url 'login' %}">Login</a>
+<style>
+  .background-radial-gradient {
+    min-height: 100vh;
+    background-color: hsl(218, 41%, 15%);
+    background-image: radial-gradient(650px circle at 0% 0%,
+        hsl(218, 41%, 35%) 15%,
+        hsl(218, 41%, 30%) 35%,
+        hsl(218, 41%, 20%) 75%,
+        hsl(218, 41%, 19%) 80%,
+        transparent 100%),
+      radial-gradient(1250px circle at 100% 100%,
+        hsl(218, 41%, 45%) 15%,
+        hsl(218, 41%, 30%) 35%,
+        hsl(218, 41%, 20%) 75%,
+        hsl(218, 41%, 19%) 80%,
+        transparent 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-custom {
+    border-radius: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    background: hsla(0, 0%, 100%, 0.9);
+    backdrop-filter: blur(25px);
+    padding: 2rem;
+  }
+
+  .form-floating input {
+    height: 50px;
+    padding-left: 15px;
+  }
+
+  .form-floating label {
+    padding-left: 12px;
+  }
+
+  .social-buttons .btn {
+    border-radius: 50px;
+    font-size: 1.2rem;
+    padding: 10px 15px;
+  }
+</style>
+
+<section class="background-radial-gradient">
+  <div class="container px-4 py-5 px-md-5 text-center text-lg-start">
+    <div class="row gx-lg-5 align-items-center justify-content-center">
+      <div class="col-lg-6 mb-5">
+        <h1 class="fw-bold text-white">
+          Join Us Today <br />
+          <span style="color: hsl(218, 81%, 75%)">Create an account now</span>
+        </h1>
+        <p class="mb-4 opacity-70 text-white">
+          Enjoy seamless parking management with our smart system.
+        </p>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="card card-custom">
+          <div class="card-body p-4">
+            <h3 class="text-center text-primary fw-bold mb-4">Sign Up</h3>
+
+            <form method="post">
+              {% csrf_token %}
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <div class="form-floating">
+                    <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" class="form-control" placeholder="Username">
+                    <label for="{{ form.username.id_for_label }}">Username</label>
+                  </div>
                 </div>
-            </div>
+                <div class="col-md-6 mb-3">
+                  <div class="form-floating">
+                    <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" class="form-control" placeholder="Email">
+                    <label for="{{ form.email.id_for_label }}">Email</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-floating mb-3">
+                <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}" class="form-control" placeholder="Password">
+                <label for="{{ form.password1.id_for_label }}">Password</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}" class="form-control" placeholder="Confirm Password">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg w-100">Sign Up</button>
+
+              
+              <div class="text-center mt-3">
+                Already have an account? <a href="{% url 'login' %}">Login</a>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
+
     </div>
-</div>
+  </div>
+</section>
 {% endblock %}
