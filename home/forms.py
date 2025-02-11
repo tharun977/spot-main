@@ -1,14 +1,21 @@
 from django import forms
 from django.forms import inlineformset_factory
 from .models import User, ParkingPlace, PaymentDetails, ParkingFee, ParkingLot, VehicleType 
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
-class UserForm(forms.ModelForm):
+class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['username', 'password', 'full_name', 'mobile_number', 'email', 'role']
+        fields = ['username', 'email', 'password1', 'password2', 'role']
 
-from django import forms
-from .models import ParkingPlace, VehicleType
+    def __init__(self, *args, **kwargs):
+        super(RegistrationForm, self).__init__(*args, **kwargs)
+        self.fields['role'].choices = [('Staff', 'Staff'), ('User', 'User')]
+
+class LoginForm(AuthenticationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'password']
 
 class ParkingPlaceForm(forms.ModelForm):
     vehicle_types = forms.ModelMultipleChoiceField(

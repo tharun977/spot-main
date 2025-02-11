@@ -1,19 +1,24 @@
+from django.contrib.auth.models import AbstractUser , Group, Permission
 from django.db import models
-from django.utils import timezone  
+from django.utils import timezone
 
-class User(models.Model):
-    username = models.CharField(max_length=255, unique=True)
-    password = models.CharField(max_length=255)
-    full_name = models.CharField(max_length=255)
-    mobile_number = models.CharField(max_length=15)
-    email = models.EmailField(unique=True)
-    role = models.CharField(
-        max_length=50, choices=[('Admin', 'Admin'), ('User', 'User')]
+
+# ✅ Extend AbstractUser for Authentication
+class User(AbstractUser):
+    ROLES = (
+        ('Admin', 'Admin'),
+        ('Staff', 'Staff'),
+        ('User', 'User'),
     )
+    role = models.CharField(max_length=10, choices=ROLES)
+
+    # ✅ Add related_name to prevent conflicts
+    groups = models.ManyToManyField(Group, related_name="custom_user_set", blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name="custom_user_permissions", blank=True)
 
     def __str__(self):
         return self.username
-
+    
 
 class ParkingPlace(models.Model):
     place_name = models.CharField(max_length=255)
@@ -26,11 +31,11 @@ class ParkingPlace(models.Model):
         return self.place_name
 
 
-class ParkingLot(models.Model):  # ✅ Moved this above ParkingDetails
+class ParkingLot(models.Model):  # ✅ Defined before ParkingDetails
     parking_place = models.ForeignKey(
         ParkingPlace, related_name='parking_lots', on_delete=models.CASCADE, null=True, blank=True
     )
-    lot_name = models.CharField(max_length=50, unique=True , null=True)  # Ensuring unique lot names
+    lot_name = models.CharField(max_length=50, unique=True, null=True)  # Ensuring unique lot names
     status_before = models.CharField(max_length=255, null=True, blank=True)
     status_after = models.CharField(max_length=255, null=True, blank=True)
 
@@ -102,7 +107,7 @@ class PaymentDetails(models.Model):
     user_id = models.ForeignKey(
         User, related_name="payments", on_delete=models.CASCADE
     )
-    parking_id = models.ForeignKey(
+    parking_id = models.OneToOneField(  # ✅ Changed to OneToOneField
         ParkingDetails, related_name="payments", on_delete=models.CASCADE
     )
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
@@ -110,7 +115,7 @@ class PaymentDetails(models.Model):
         max_length=50, choices=[('Card', 'Card'), ('Cash', 'Cash'), ('Online', 'Online')]
     )
     payment_date = models.DateTimeField(auto_now_add=True)
-    payment_status = models.BooleanField(default=True)  
+    payment_status = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = "Payments"
