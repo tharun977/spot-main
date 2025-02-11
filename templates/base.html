@@ -31,22 +31,6 @@
             transition: all 0.3s ease-in-out;
         }
 
-        .mini-navbar {
-            padding: 8px;
-            background: rgba(0, 123, 255, 0.9);
-            backdrop-filter: blur(15px);
-        }
-
-        .mini-navbar .navbar-brand {
-            font-size: 1rem;
-        }
-
-        .mini-navbar .nav-link {
-            font-size: 0.9rem;
-            padding: 5px 10px;
-        }
-
-        /* Navbar Scroll Effect */
         .navbar-hidden {
             transform: translateY(-100%);
             transition: transform 0.3s ease-in-out;
@@ -68,47 +52,37 @@
             border-radius: 5px;
         }
 
-        /* Theme Toggle Button - Fixed Shape */
+        /* Theme Toggle Button */
         .theme-toggle {
-    background: #222;  /* Dark background for light mode */
-    border: 2px solid #f8f9fa;  /* Light border */
-    color: #f8f9fa;  /* Light text */
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    padding: 10px;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+            background: #222;
+            border: 2px solid #f8f9fa;
+            color: #f8f9fa;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            padding: 10px;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
+        .theme-toggle:hover {
+            background: #333;
+        }
 
-        /* Hover effect */
-.theme-toggle:hover {
-    background: #333;
-}
-/* Dark mode styles */
-.dark-theme .theme-toggle {
-    background: #ffdd57;  /* Sun yellow */
-    border: 2px solid #ffdd57;
-    color: #222;
-}
+        .dark-theme .theme-toggle {
+            background: #ffdd57;
+            border: 2px solid #ffdd57;
+            color: #222;
+        }
 
-.dark-theme .theme-toggle:hover {
-    background: #ffcc00;
-}
+        .dark-theme .theme-toggle:hover {
+            background: #ffcc00;
+        }
 
-/* Smooth icon transition */
-.theme-toggle i {
-    transition: transform 0.3s ease-in-out;
-}
-
-.dark-theme .theme-toggle i {
-    transform: rotate(180deg);
-}
         /* Dark Mode */
         .dark-theme {
             background-color: #2e2e2e;
@@ -117,10 +91,6 @@
 
         .dark-theme .navbar {
             background: rgba(0, 0, 0, 0.8);
-        }
-
-        .dark-theme .mini-navbar {
-            background: rgba(0, 0, 0, 1);
         }
 
         .dark-theme .navbar-nav .nav-link {
@@ -136,50 +106,60 @@
             color: #ffffff;
         }
 
-        /* Icon transition */
-        .theme-toggle i {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        }
-
-        .dark-theme .theme-toggle i {
-            transform: rotate(180deg);
-            color: #ffdd57;
-        }
     </style>
 </head>
 <body>
 
-    <!-- Navbar -->
-    <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
-    <div class="container">
-        <a class="navbar-brand fw-bold me-4" href="{% url 'home' %}">SPOT</a>
-
-        <!-- Navbar Toggle Button (For Mobile) -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-            <!-- Left-Aligned Navbar Links -->
-            <ul class="navbar-nav gap-3">  <!-- Added gap for spacing -->
-                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'manage_parking_places' %}">Parking Places</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'manage_parking_fees' %}">Parking Fees</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'logs' %}">Logs</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'payments' %}">Payments</a></li>
-            </ul>
-
-            <!-- Theme Toggle Button (Right-Aligned) -->
-            <button id="theme-toggle" class="theme-toggle ms-4">
-                <i class="fas fa-moon"></i>
-            </button>
-        </div>
+    <!-- Messages (Ensures Visibility Below Navbar) -->
+    {% if messages %}
+    <div class="container mt-5 pt-4">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
     </div>
-</nav>
+    {% endif %}
 
+    <!-- Navbar (Hidden on Login & Register Pages) -->
+    {% if request.path != '/login/' and request.path != '/register/' %}
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
+        <div class="container">
+            <a class="navbar-brand fw-bold me-4" href="{% url 'home' %}">SPOT</a>
+
+            <!-- Navbar Toggle Button (For Mobile) -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                <ul class="navbar-nav gap-3">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'manage_parking_places' %}">Parking Places</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'manage_parking_fees' %}">Parking Fees</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logs' %}">Logs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'payments' %}">Payments</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <button id="theme-toggle" class="theme-toggle ms-4">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    
+                    <!-- Show Logout if Logged In -->
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}" class="btn btn-danger ms-3">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-light ms-3">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
 
     <!-- Page Content -->
     <section class="container my-5" style="margin-top: 80px;">
@@ -217,23 +197,13 @@
             lastScrollY = window.scrollY;
         });
 
-        // Detect if NOT on homepage & apply mini-navbar
-        document.addEventListener("DOMContentLoaded", function() {
-            if (window.location.pathname !== "/") {
-                navbar.classList.add("mini-navbar");
-            }
-        });
-
         // Theme Toggle
         themeToggle.addEventListener("click", () => {
             document.body.classList.toggle("dark-theme");
-            if (document.body.classList.contains("dark-theme")) {
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                localStorage.setItem("theme", "dark");
-            } else {
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                localStorage.setItem("theme", "light");
-            }
+            themeToggle.innerHTML = document.body.classList.contains("dark-theme")
+                ? '<i class="fas fa-sun"></i>'
+                : '<i class="fas fa-moon"></i>';
+            localStorage.setItem("theme", document.body.classList.contains("dark-theme") ? "dark" : "light");
         });
 
         // Load saved theme preference

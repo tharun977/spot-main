@@ -1,13 +1,46 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, LogDetails, VehicleType , AllowedVehicleType
-from .forms import ParkingPlaceForm, PaymentForm, UserForm   , ParkingLotFormSet
+from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, LogDetails, VehicleType , AllowedVehicleType , ParkingFee
+from .forms import ParkingPlaceForm, PaymentForm   , ParkingLotFormSet , ParkingFeeForm , RegistrationForm , LoginForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, authenticate, logout
+from django.views.decorators.csrf import csrf_protect  # Import CSRF protection
+from django.contrib import messages  # Import Django messages framework
+
+
+@csrf_protect
+def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Registration successful! Welcome, " + user.username)
+            return redirect('home')  # Ensure 'home' is correct in urls.py
+    else:
+        form = RegistrationForm()
+    return render(request, 'register.html', {'form': form})
+
+
+
+def user_login(request):
+    if request.method == 'POST':
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return redirect('login')
 
 def home(request):
     return render(request, 'home.html')
 
-from django.shortcuts import render, redirect
-from .forms import ParkingPlaceForm, ParkingFeeForm
-from .models import ParkingPlace, ParkingFee
 
 def manage_parking_places(request):
     if request.method == "POST":

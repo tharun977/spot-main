@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  .login-container {
+    min-height: 100vh;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-card {
+    max-width: 450px;
+    width: 100%;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .login-img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .form-floating label {
+    padding-left: 10px;
+  }
+
+  .form-floating input {
+    height: 50px;
+    padding-left: 15px;
+  }
+</style>
+
+<section class="vh-100 login-container">
+  <div class="container py-5 h-100">
+    <div class="row d-flex align-items-center justify-content-center h-100">
+      <div class="col-md-8 col-lg-7 col-xl-6">
+        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
+          class="img-fluid login-img" alt="Phone image">
+      </div>
+      <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
+        <div class="card shadow-lg border-0 login-card">
+          <div class="card-body p-5 text-center">
+
+            <h3 class="mb-4 text-primary fw-bold">Sign In</h3>
+
+            <form method="post">
+              {% csrf_token %}
+
+              <div class="form-floating mb-3">
+                <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" class="form-control" placeholder="Username">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" class="form-control" placeholder="Password">
+                <label for="{{ form.password.id_for_label }}">Password</label>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="rememberMe">
+                  <label class="form-check-label" for="rememberMe">Remember me</label>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg w-100">Sign in</button>
+
+            </form>
+
+            <div class="text-center mt-3">
+              Don't have an account? <a href="{% url 'register' %}">Register</a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
