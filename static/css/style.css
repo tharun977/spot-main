@@ -3,3 +3,38 @@ li:hover {
     border-radius: 10px;
     border: 1px solid yellow;
 }
+
+/* Avatar Styling */
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+/* Dropdown Styling */
+.dropdown-menu {
+    min-width: 200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.dropdown-item {
+    padding: 10px 20px;
+    color: #333;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown-item i {
+    margin-right: 8px;
+}
+
+.dropdown-divider {
+    margin: 8px 0;
+}

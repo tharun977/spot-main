@@ -4,18 +4,31 @@ from .models import User, ParkingPlace, PaymentDetails, ParkingFee, ParkingLot, 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 class RegistrationForm(UserCreationForm):
+    avatar = forms.ImageField(required=False)
+
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2', 'role']
+        fields = ['username', 'email', 'password1', 'password2', 'role', 'avatar']
 
-    def __init__(self, *args, **kwargs):
-        super(RegistrationForm, self).__init__(*args, **kwargs)
-        self.fields['role'].choices = [('Staff', 'Staff'), ('User', 'User')]
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if user.role == 'Admin':
+            user.avatar = 'avatars/default_admin.png'  # Default avatar for Admin
+        if commit:
+            user.save()
+        return user
+    
 
 class LoginForm(AuthenticationForm):
     class Meta:
         model = User
         fields = ['username', 'password']
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['avatar']
+
 
 class ParkingPlaceForm(forms.ModelForm):
     vehicle_types = forms.ModelMultipleChoiceField(

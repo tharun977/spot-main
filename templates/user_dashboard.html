@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-primary">User Dashboard</h2>
+
+    <!-- Parking Fees -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4 class="card-title">Parking Fees</h4>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Parking Place</th>
+                        <th>Vehicle Type</th>
+                        <th>Fee</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fee in parking_fees %}
+                    <tr>
+                        <td>{{ fee.parking_place.place_name }}</td>
+                        <td>{{ fee.vehicle_type.vehicle_type }}</td>
+                        <td>₹{{ fee.fee }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">No parking fees available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Payment History -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4 class="card-title">Payment History</h4>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Amount Paid</th>
+                        <th>Payment Method</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>₹{{ payment.amount_paid }}</td>
+                        <td>{{ payment.payment_method }}</td>
+                        <td>{{ payment.payment_date }}</td>
+                        <td>{% if payment.payment_status %}Completed{% else %}Pending{% endif %}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No payment records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
