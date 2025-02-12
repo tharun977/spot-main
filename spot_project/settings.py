@@ -47,6 +47,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 MIDDLEWARE = [
+    'django.middleware.csrf.CsrfViewMiddleware',  # ✅ Ensure this is present
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -123,10 +124,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'home/static')
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # Add this line
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -140,3 +144,5 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',  # Localhost for development
     'http://localhost:8000',
 ]
+
+AUTH_USER_MODEL = 'home.User'
