@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, LogDetails, VehicleType , AllowedVehicleType , ParkingFee
 from .forms import ParkingPlaceForm, PaymentForm   , ParkingLotFormSet , ParkingFeeForm , RegistrationForm , LoginForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, authenticate, logout
-from django.views.decorators.csrf import csrf_protect  # Import CSRF protection
+from django.contrib.auth import login, authenticate, logout , get_user_model
+from django.views.decorators.csrf import csrf_protect  
+from django.contrib.auth.decorators import login_required, user_passes_test  
 from django.contrib import messages  # Import Django messages framework
+from .forms import ProfileUpdateForm , LoginForm
 
 
 @csrf_protect
@@ -22,25 +24,113 @@ def register(request):
 
 
 
+User = get_user_model()  # Ensures we use home.User
+
 def user_login(request):
     if request.method == 'POST':
         form = LoginForm(data=request.POST)
         if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('home')
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)
+                messages.success(request, f"✅ Welcome back, {user.username}!")
+                return redirect('home')
+            else:
+                messages.error(request, "❌ Invalid username or password")
+        else:
+            messages.error(request, "❌ Form validation failed")
+    
     else:
         form = LoginForm()
+    
     return render(request, 'login.html', {'form': form})
+
+
+@login_required
+def home(request):
+    return render(request, 'home.html')
+
+@login_required
+def profile(request):
+    return render(request, 'profile.html')
+
+@login_required
+def settings(request):
+    return render(request, 'settings.html')  # ✅ Ensure 'settings.html' exists
+
 
 @login_required
 def user_logout(request):
     logout(request)
     return redirect('login')
 
+
+# Utility functions to check user roles
+def is_staff(user):
+    return user.is_authenticated and user.role == "Staff"
+
+def is_user(user):
+    return user.is_authenticated and user.role == "User"
+
+def is_admin(user):
+    return user.is_authenticated and user.is_superuser
+
+# Admin Dashboard (No changes required)
+@login_required
+@user_passes_test(is_admin)
+def admin_dashboard(request):
+    return render(request, 'admin_dashboard.html')
+
+# Staff Dashboard
+@login_required
+@user_passes_test(is_staff)
+def staff_dashboard(request):
+    parking_places = ParkingPlace.objects.all()  # Read-only view
+    parking_fees = ParkingFee.objects.all()  # Editable
+
+    if request.method == "POST":
+        fee_id = request.POST.get("fee_id")
+        new_fee = request.POST.get("new_fee")
+        if fee_id and new_fee:
+            fee = ParkingFee.objects.get(id=fee_id)
+            fee.fee = new_fee
+            fee.save()
+
+    return render(request, 'staff_dashboard.html', {
+        'parking_places': parking_places,
+        'parking_fees': parking_fees,
+    })
+
+# User Dashboard
+@login_required
+@user_passes_test(is_user)
+def user_dashboard(request):
+    parking_fees = ParkingFee.objects.all()  # Read-only
+    payments = PaymentDetails.objects.filter(user_id=request.user)
+
+    return render(request, 'user_dashboard.html', {
+        'parking_fees': parking_fees,
+        'payments': payments,
+    })
+
+
 def home(request):
     return render(request, 'home.html')
 
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = ProfileUpdateForm(instance=request.user)
+    
+    return render(request, 'profile.html', {'form': form})
 
 def manage_parking_places(request):
     if request.method == "POST":

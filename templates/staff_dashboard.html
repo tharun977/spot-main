@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Dashboard{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-primary">Staff Dashboard</h2>
+
+    <!-- Parking Places (Read-Only) -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4 class="card-title">Parking Places (Read-Only)</h4>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Capacity</th>
+                        <th>Available Spaces</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for place in parking_places %}
+                    <tr>
+                        <td>{{ place.place_name }}</td>
+                        <td>{{ place.location }}</td>
+                        <td>{{ place.capacity }}</td>
+                        <td>{{ place.available_spaces }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No parking places available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Parking Fees (Editable) -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4 class="card-title">Manage Parking Fees</h4>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Parking Place</th>
+                        <th>Vehicle Type</th>
+                        <th>Current Fee</th>
+                        <th>Update Fee</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fee in parking_fees %}
+                    <tr>
+                        <td>{{ fee.parking_place.place_name }}</td>
+                        <td>{{ fee.vehicle_type.vehicle_type }}</td>
+                        <td>₹{{ fee.fee }}</td>
+                        <td>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="fee_id" value="{{ fee.id }}">
+                                <input type="number" step="0.01" name="new_fee" class="form-control" required>
+                                <button type="submit" class="btn btn-success btn-sm mt-1">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No parking fee records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

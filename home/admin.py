@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import ParkingPlace , LogDetails , PaymentDetails , ParkingDetails , VehicleType , ParkingLot , ParkingFee
+from .models import ParkingPlace , LogDetails , PaymentDetails , ParkingDetails , VehicleType , ParkingLot , ParkingFee , User
 
 admin.site.register(ParkingPlace)
 
@@ -18,3 +18,5 @@ admin.site.register(VehicleType)
 admin.site.register(ParkingLot)
 
 admin.site.register(ParkingFee)
+
+admin.site.register(User)
