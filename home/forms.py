@@ -2,22 +2,25 @@ from django import forms
 from django.forms import inlineformset_factory
 from .models import User, ParkingPlace, PaymentDetails, ParkingFee, ParkingLot, VehicleType 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.core.exceptions import ValidationError
 
 class RegistrationForm(UserCreationForm):
     avatar = forms.ImageField(required=False)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2', 'role', 'avatar']
+        fields = ['username', 'email', 'password1', 'password2', 'avatar']
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        if user.role == 'Admin':
-            user.avatar = 'avatars/default_admin.png'  # Default avatar for Admin
+        user.role = 'User'  # ✅ Force role to be 'User'
+        if not user.avatar:
+            user.avatar = 'avatars/default.png'  # ✅ Set default avatar
         if commit:
             user.save()
         return user
     
+
 
 class LoginForm(AuthenticationForm):
     class Meta:
