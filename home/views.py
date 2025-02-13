@@ -12,14 +12,17 @@ from .forms import ProfileUpdateForm , LoginForm
 @csrf_protect
 def register(request):
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
+        form = RegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
             login(request, user)
             messages.success(request, "Registration successful! Welcome, " + user.username)
-            return redirect('home')  # Ensure 'home' is correct in urls.py
+            return redirect('user_dashboard')  # ✅ Redirect after successful registration
+        else:
+            messages.error(request, "Registration failed. Please correct the errors below.")
     else:
         form = RegistrationForm()
+
     return render(request, 'register.html', {'form': form})
 
 

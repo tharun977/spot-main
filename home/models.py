@@ -16,8 +16,8 @@ class User(AbstractUser):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='User')
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, default='avatars/default.png')
 
-    groups = models.ManyToManyField(Group, related_name="custom_user_groups", blank=True)
-    user_permissions = models.ManyToManyField(Permission, related_name="custom_user_permissions", blank=True)
+    groups = models.ManyToManyField(Group, related_name="user_groups", blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name="user_permissions", blank=True)
 
     def get_avatar(self):
         if self.role == 'Admin':
