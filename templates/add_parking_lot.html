@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Add Parking Lot{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>Add Parking Lot to {{ parking_place.place_name }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Save</button>
+    </form>
+</div>
+{% endblock %}

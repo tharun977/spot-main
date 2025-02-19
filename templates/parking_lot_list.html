@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Parking Lots{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>{{ parking_place.place_name }} - Parking Lots</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Lot Name</th>
+                <th>Vehicle Number</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lot in parking_lots %}
+            <tr>
+                <td>{{ lot.lot_name }}</td>
+                <td>{{ lot.vehicle_number|default:"N/A" }}</td>
+                <td>{{ lot.status|yesno:"Occupied,Available" }}</td>
+                <td>
+                    <a href="{% url 'edit_parking_lot' lot.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                    <form action="{% url 'delete_parking_lot' lot.pk %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center">No parking lots found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'add_parking_lot' parking_place.pk %}" class="btn btn-primary">Add Parking Lot</a>
+</div>
+{% endblock %}

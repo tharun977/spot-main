@@ -16,7 +16,6 @@
     <button type="submit" class="btn btn-primary mt-3">Add Parking Place</button>
 </form>
 
-
 <style>
     /* Hide Scrollbar */
     ::-webkit-scrollbar {
@@ -40,7 +39,11 @@
     <tbody>
         {% for parking_place in parking_places %}
         <tr>
-            <td>{{ parking_place.place_name }}</td>
+            <td>
+                <a href="{% url 'parking_lot_list' parking_place.pk %}" class="text-decoration-none">
+                    <strong>{{ parking_place.place_name }}</strong>
+                </a>
+            </td>
             <td>{{ parking_place.location }}</td>
             <td>{{ parking_place.capacity }}</td>
             <td>{{ parking_place.available_spaces }}</td>
@@ -67,16 +70,9 @@
 </table>
 
 <script>
-    document.getElementById("add-lot-form").addEventListener("click", function() {
-        let container = document.getElementById("lot-form-container");
-        let newForm = container.children[0].cloneNode(true);
-        container.appendChild(newForm);
-    });
-
     function confirmDelete() {
         return confirm("Do you want to delete this parking place?");
     }
 </script>
 
 {% endblock %}
-
