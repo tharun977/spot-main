@@ -82,12 +82,14 @@ class ParkingPlaceForm(ModelForm):
 class ParkingLotForm(forms.ModelForm):
     class Meta:
         model = ParkingLot
-        fields = ['lot_name', 'status_before', 'status_after']
+        fields = ['lot_name', 'vehicle_number', 'status_before', 'status_after']
         widgets = {
             'lot_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'vehicle_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'YYBH####XX'}),
             'status_before': forms.TextInput(attrs={'class': 'form-control'}),
             'status_after': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
 
 
 # ✅ Inline Formset for Parking Lots inside a Parking Place
