@@ -6,7 +6,7 @@ from django.contrib.auth import login, authenticate, logout , get_user_model
 from django.views.decorators.csrf import csrf_protect  
 from django.contrib.auth.decorators import login_required, user_passes_test  
 from django.contrib import messages  # Import Django messages framework
-from .forms import ProfileUpdateForm , LoginForm
+from .forms import ProfileUpdateForm , LoginForm , ParkingLotForm
 
 
 @csrf_protect
@@ -217,6 +217,47 @@ def delete_parking_place(request, pk):
 def payments(request):
     payments = PaymentDetails.objects.all()
     return render(request, 'payments.html', {"payments": payments})
+
+
+
+# ✅ View all parking lots inside a parking place
+def parking_lot_list(request, pk):
+    parking_place = get_object_or_404(ParkingPlace, pk=pk)
+    parking_lots = ParkingLot.objects.filter(parking_place=parking_place)
+    return render(request, 'parking_lot_list.html', {'parking_place': parking_place, 'parking_lots': parking_lots})
+
+# ✅ Add a new parking lot
+def add_parking_lot(request, pk):
+    parking_place = get_object_or_404(ParkingPlace, pk=pk)
+    if request.method == 'POST':
+        form = ParkingLotForm(request.POST)
+        if form.is_valid():
+            parking_lot = form.save(commit=False)
+            parking_lot.parking_place = parking_place  # Assign the parking place
+            parking_lot.save()
+            return redirect('parking_lot_list', pk=pk)
+    else:
+        form = ParkingLotForm()
+    return render(request, 'add_parking_lot.html', {'form': form, 'parking_place': parking_place})
+
+# ✅ Edit an existing parking lot
+def edit_parking_lot(request, lot_pk):
+    parking_lot = get_object_or_404(ParkingLot, pk=lot_pk)
+    if request.method == 'POST':
+        form = ParkingLotForm(request.POST, instance=parking_lot)
+        if form.is_valid():
+            form.save()
+            return redirect('parking_lot_list', pk=parking_lot.parking_place.pk)
+    else:
+        form = ParkingLotForm(instance=parking_lot)
+    return render(request, 'edit_parking_lot.html', {'form': form, 'parking_lot': parking_lot})
+
+# ✅ Delete a parking lot
+def delete_parking_lot(request, lot_pk):
+    parking_lot = get_object_or_404(ParkingLot, pk=lot_pk)
+    parking_lot.delete()
+    return redirect('parking_lot_list', pk=parking_lot.parking_place.pk)
+
 
 
 def logs(request):
