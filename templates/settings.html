@@ -21,7 +21,9 @@
 
             <div class="mb-3">
                 <label for="role" class="form-label">Role:</label>
-                <input type="text" class="form-control" id="role" value="{{ user.role }}" disabled>
+                <input type="text" class="form-control" id="role" 
+                       value="{% if user.is_superuser %}Admin{% else %}Staff{% endif %}" 
+                       disabled>
             </div>
 
             <div class="text-center">

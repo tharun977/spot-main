@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Delete Staff{% endblock %}
+
+{% block content %}
+<h2 class="text-center text-danger">Confirm Staff Deletion</h2>
+<p class="text-center">Are you sure you want to delete <strong>{{ staff.username }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="{% url 'manage_staff_users' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
