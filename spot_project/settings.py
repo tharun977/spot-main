@@ -95,16 +95,17 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {'min_length': 6},  # ✅ Reduce minimum length to 6 characters
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-        'OPTIONS': {'password_list_path': None},  # ✅ Disable common password check
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 8},
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-        'OPTIONS': {'min_length': 6},  # ✅ Allow numeric passwords (minimum 6)
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
