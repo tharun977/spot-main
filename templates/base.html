@@ -125,7 +125,7 @@
     {% endif %}
 
         <!-- Navbar (Hidden on Login & Register Pages) -->
-        {% if request.path != '/login/' and request.path != '/register/' %}
+        {% if request.resolver_match.url_name != 'login' %}
         <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
             <div class="container">
                 <a class="navbar-brand fw-bold me-4" href="{% url 'home' %}">SPOT</a>
