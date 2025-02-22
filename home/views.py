@@ -1,33 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, LogDetails, VehicleType , AllowedVehicleType , ParkingFee
-from .forms import ParkingPlaceForm, PaymentForm   , ParkingLotFormSet , ParkingFeeForm , RegistrationForm , LoginForm
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, authenticate, logout , get_user_model
-from django.views.decorators.csrf import csrf_protect  
-from django.contrib.auth.decorators import login_required, user_passes_test  
-from django.contrib import messages  # Import Django messages framework
-from .forms import ProfileUpdateForm , LoginForm , ParkingLotForm
+from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, LogDetails, VehicleType, AllowedVehicleType, ParkingFee
+from .forms import ParkingPlaceForm, PaymentForm, ParkingLotFormSet, ParkingFeeForm, LoginForm, ProfileUpdateForm, ParkingLotForm, StaffRegistrationForm
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import login, authenticate, logout, get_user_model
+from django.views.decorators.csrf import csrf_protect
+from django.contrib import messages
 
+def home(request):
+    return render(request, 'home.html')
 
-@csrf_protect
-def register(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST, request.FILES)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Registration successful! Welcome, " + user.username)
-            return redirect('user_dashboard')  # ✅ Redirect after successful registration
-        else:
-            messages.error(request, "Registration failed. Please correct the errors below.")
-    else:
-        form = RegistrationForm()
+User = get_user_model()  # Ensures we use the custom User model
 
-    return render(request, 'register.html', {'form': form})
-
-
-
-User = get_user_model()  # Ensures we use home.User
+# ========================== LOGIN & LOGOUT ========================== #
 
 def user_login(request):
     if request.method == 'POST':
@@ -45,51 +29,24 @@ def user_login(request):
                 messages.error(request, "❌ Invalid username or password")
         else:
             messages.error(request, "❌ Form validation failed")
-    
     else:
         form = LoginForm()
-    
+
     return render(request, 'login.html', {'form': form})
-
-
-@login_required
-def home(request):
-    return render(request, 'home.html')
-
-@login_required
-def profile(request):
-    return render(request, 'profile.html')
-
-@login_required
-def settings(request):
-    return render(request, 'settings.html')  # ✅ Ensure 'settings.html' exists
-
 
 @login_required
 def user_logout(request):
     logout(request)
     return redirect('login')
 
+# ========================== DASHBOARDS ========================== #
 
-# Utility functions to check user roles
-def is_staff(user):
-    return user.is_authenticated and user.role == "Staff"
-
-def is_user(user):
-    return user.is_authenticated and user.role == "User"
-
-def is_admin(user):
-    return user.is_authenticated and user.is_superuser
-
-# Admin Dashboard (No changes required)
 @login_required
-@user_passes_test(is_admin)
+@user_passes_test(lambda u: u.is_superuser)  # Only superuser (Admin) can access
 def admin_dashboard(request):
-    return render(request, 'admin_dashboard.html')
+    return render(request, 'home.html')
 
-# Staff Dashboard
 @login_required
-@user_passes_test(is_staff)
 def staff_dashboard(request):
     parking_places = ParkingPlace.objects.all()  # Read-only view
     parking_fees = ParkingFee.objects.all()  # Editable
@@ -107,21 +64,7 @@ def staff_dashboard(request):
         'parking_fees': parking_fees,
     })
 
-# User Dashboard
-@login_required
-@user_passes_test(is_user)
-def user_dashboard(request):
-    parking_fees = ParkingFee.objects.all()  # Read-only
-    payments = PaymentDetails.objects.filter(user_id=request.user)
-
-    return render(request, 'user_dashboard.html', {
-        'parking_fees': parking_fees,
-        'payments': payments,
-    })
-
-
-def home(request):
-    return render(request, 'home.html')
+# ========================== USER PROFILE ========================== #
 
 @login_required
 def profile(request):
@@ -132,17 +75,72 @@ def profile(request):
             return redirect('profile')
     else:
         form = ProfileUpdateForm(instance=request.user)
-    
+
     return render(request, 'profile.html', {'form': form})
 
+@login_required
+def settings(request):
+    return render(request, 'settings.html')
+
+# ========================== STAFF MANAGEMENT ========================== #
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)  # ✅ Only Admins can access
+def manage_staff_users(request):
+    form = StaffRegistrationForm(request.POST or None, request.FILES or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_staff = True  # ✅ Ensure user is marked as staff
+            user.is_superuser = False  # ✅ Prevent admin creation
+            user.save()
+            messages.success(request, "✅ Staff user added successfully!")
+            return redirect('manage_staff_users')
+        else:
+            messages.error(request, "❌ Failed to create staff user. Please correct the errors below.")
+
+    # ✅ Ensure ALL existing non-superuser staff are fetched properly
+    staff_users = User.objects.filter(is_staff=True, is_superuser=False).order_by('-date_joined')
+
+    return render(request, 'manage_staff_users.html', {'form': form, 'staff_users': staff_users})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def edit_staff(request, staff_id):
+    staff = get_object_or_404(User, pk=staff_id, is_staff=True)
+    if request.method == 'POST':
+        form = StaffRegistrationForm(request.POST, request.FILES, instance=staff)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "✅ Staff details updated successfully!")
+            return redirect('manage_staff_users')
+    else:
+        form = StaffRegistrationForm(instance=staff)
+
+    return render(request, 'edit_staff.html', {'form': form, 'staff': staff})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def delete_staff(request, staff_id):
+    staff = get_object_or_404(User, pk=staff_id, is_staff=True)
+    if request.method == 'POST':
+        staff.delete()
+        messages.success(request, "✅ Staff user deleted successfully!")
+        return redirect('manage_staff_users')
+
+    return render(request, 'delete_staff.html', {'staff': staff})
+
+# ========================== PARKING PLACES ========================== #
+
+@login_required
 def manage_parking_places(request):
     if request.method == "POST":
         place_form = ParkingPlaceForm(request.POST)
-
         if place_form.is_valid():
             parking_place = place_form.save()
             return redirect('manage_parking_places')
-
     else:
         place_form = ParkingPlaceForm()
 
@@ -153,16 +151,37 @@ def manage_parking_places(request):
         'parking_places': parking_places
     })
 
-
+@login_required
 def parking_place_detail(request, pk):
     parking_place = get_object_or_404(ParkingPlace, pk=pk)
-    parking_fees = ParkingFee.objects.filter(place=parking_place)
+    parking_fees = ParkingFee.objects.filter(parking_place=parking_place)
 
     return render(request, 'parking_place_detail.html', {
         'parking_place': parking_place,
         'parking_fees': parking_fees
     })
 
+@login_required
+def edit_parking_place(request, pk):
+    parking_place = get_object_or_404(ParkingPlace, pk=pk)
+
+    if request.method == "POST":
+        form = ParkingPlaceForm(request.POST, instance=parking_place)
+        if form.is_valid():
+            form.save()
+            return redirect('manage_parking_places')
+    else:
+        form = ParkingPlaceForm(instance=parking_place)
+
+    return render(request, 'edit_parking_place.html', {'form': form, 'parking_place': parking_place})
+
+@login_required
+def delete_parking_place(request, pk):
+    parking_place = get_object_or_404(ParkingPlace, pk=pk)
+    if request.method == "POST":
+        parking_place.delete()
+        return redirect('manage_parking_places')
+    
 
 def manage_parking_fees(request):
     """ View for managing parking fees separately """
@@ -183,64 +202,29 @@ def manage_parking_fees(request):
     )
 
 
-def edit_parking_place(request, pk):
-    parking_place = get_object_or_404(ParkingPlace, pk=pk)
+# ========================== PARKING LOTS ========================== #
 
-    if request.method == "POST":
-        form = ParkingPlaceForm(request.POST, instance=parking_place)
-        if form.is_valid():
-            parking_place = form.save(commit=False)
-            parking_place.save()
-
-            # **Fix: Correctly update allowed vehicle types**
-            AllowedVehicleType.objects.filter(parking_place=parking_place).delete()
-            for vehicle_type in form.cleaned_data['vehicle_types']:
-                AllowedVehicleType.objects.create(parking_place=parking_place, vehicle_type=vehicle_type)
-
-            return redirect('manage_parking_places')
-
-    else:
-        # Preload existing vehicle types
-        existing_vehicle_types = parking_place.allowed_vehicle_types.values_list('vehicle_type', flat=True)
-        form = ParkingPlaceForm(instance=parking_place, initial={'vehicle_types': existing_vehicle_types})
-
-    return render(request, 'edit_parking_place.html', {'form': form, 'parking_place': parking_place})
-
-
-
-def delete_parking_place(request, pk):
-    parking_place = get_object_or_404(ParkingPlace, pk=pk)
-    if request.method == "POST":
-        parking_place.delete()
-        return redirect('manage_parking_places')
-
-def payments(request):
-    payments = PaymentDetails.objects.all()
-    return render(request, 'payments.html', {"payments": payments})
-
-
-
-# ✅ View all parking lots inside a parking place
+@login_required
 def parking_lot_list(request, pk):
     parking_place = get_object_or_404(ParkingPlace, pk=pk)
     parking_lots = ParkingLot.objects.filter(parking_place=parking_place)
     return render(request, 'parking_lot_list.html', {'parking_place': parking_place, 'parking_lots': parking_lots})
 
-# ✅ Add a new parking lot
+@login_required
 def add_parking_lot(request, pk):
     parking_place = get_object_or_404(ParkingPlace, pk=pk)
     if request.method == 'POST':
         form = ParkingLotForm(request.POST)
         if form.is_valid():
             parking_lot = form.save(commit=False)
-            parking_lot.parking_place = parking_place  # Assign the parking place
+            parking_lot.parking_place = parking_place
             parking_lot.save()
             return redirect('parking_lot_list', pk=pk)
     else:
         form = ParkingLotForm()
     return render(request, 'add_parking_lot.html', {'form': form, 'parking_place': parking_place})
 
-# ✅ Edit an existing parking lot
+@login_required
 def edit_parking_lot(request, lot_pk):
     parking_lot = get_object_or_404(ParkingLot, pk=lot_pk)
     if request.method == 'POST':
@@ -252,14 +236,20 @@ def edit_parking_lot(request, lot_pk):
         form = ParkingLotForm(instance=parking_lot)
     return render(request, 'edit_parking_lot.html', {'form': form, 'parking_lot': parking_lot})
 
-# ✅ Delete a parking lot
+@login_required
 def delete_parking_lot(request, lot_pk):
     parking_lot = get_object_or_404(ParkingLot, pk=lot_pk)
     parking_lot.delete()
     return redirect('parking_lot_list', pk=parking_lot.parking_place.pk)
 
+# ========================== PAYMENTS & LOGS ========================== #
 
+@login_required
+def payments(request):
+    payments = PaymentDetails.objects.all()
+    return render(request, 'payments.html', {"payments": payments})
 
+@login_required
 def logs(request):
     logs = LogDetails.objects.all()
     return render(request, 'log.html', {"logs": logs})

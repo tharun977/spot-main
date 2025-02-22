@@ -3,32 +3,29 @@ from django.forms import inlineformset_factory
 from .models import (
     User, ParkingPlace, ParkingLot, PaymentDetails, ParkingFee, VehicleType , AllowedVehicleType
 )
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import  AuthenticationForm
 from django.forms import ModelForm
+from django.contrib.auth import authenticate
 
 
 # ========================== USER FORMS ========================== #
 
-class RegistrationForm(UserCreationForm):
-    avatar = forms.ImageField(required=False)
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2', 'avatar']
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.role = 'User'  # ✅ Force role to be 'User'
-        if not user.avatar:
-            user.avatar = 'avatars/default.png'  # ✅ Set default avatar
-        if commit:
-            user.save()
-        return user
-
 
 class LoginForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get("username")
+        password = cleaned_data.get("password")
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            if not user.is_active:
+                raise forms.ValidationError("This account is inactive.")
+        else:
+            raise forms.ValidationError("Invalid username or password.")
+
+        return cleaned_data
 
 
 class ProfileUpdateForm(forms.ModelForm):
@@ -76,6 +73,29 @@ class ParkingPlaceForm(ModelForm):
 
         return parking_place
 
+
+class StaffRegistrationForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    avatar = forms.ImageField(required=False)  # ✅ Allow empty avatar
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'avatar', 'password']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password"])  # ✅ Hash password
+        user.is_staff = True  # ✅ Mark as staff user
+        user.is_superuser = False  # ✅ Ensure it's not an admin
+
+        if not self.cleaned_data.get('avatar'):
+            user.avatar = 'static/images/default_user.png'  # ✅ Set default avatar
+
+        if commit:
+            user.save()
+
+        return user
+    
 
 # ========================== PARKING LOT FORM ========================== #
 

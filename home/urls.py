@@ -1,19 +1,18 @@
 from django.urls import path
 from . import views 
-from .views import parking_lot_list, add_parking_lot, edit_parking_lot, delete_parking_lot
+from .views import parking_lot_list, add_parking_lot, edit_parking_lot, delete_parking_lot , manage_staff_users, edit_staff, delete_staff , admin_dashboard
 
 
 urlpatterns = [
     path('', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
-    path('register/', views.register, name='register'),
 
     # ✅ Redirect Admins here
     path('home/', views.home, name='home'),  
     
     # Staff and User Dashboards
+    path('admin_dashboard/', admin_dashboard, name='admin_dashboard'),
     path('staff_dashboard/', views.staff_dashboard, name='staff_dashboard'),
-    path('user_dashboard/', views.user_dashboard, name='user_dashboard'),
 
     path('parking_place/<int:pk>/lots/', parking_lot_list, name='parking_lot_list'),
     path('parking_place/<int:pk>/lots/add/', add_parking_lot, name='add_parking_lot'),
@@ -26,6 +25,10 @@ urlpatterns = [
     path('parking_places/edit/<int:pk>/', views.edit_parking_place, name='edit_parking_place'),
     path('parking_places/delete/<int:pk>/', views.delete_parking_place, name='delete_parking_place'),
     path('parking_fees/', views.manage_parking_fees, name='manage_parking_fees'),
+
+    path('manage_staff_users/', manage_staff_users, name='manage_staff_users'),
+    path('edit_staff/<int:staff_id>/', edit_staff, name='edit_staff'),
+    path('delete_staff/<int:staff_id>/', delete_staff, name='delete_staff'),
 
     path('payments/', views.payments, name='payments'),
     path('logs/', views.logs, name='logs'),

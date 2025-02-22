@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Edit Staff{% endblock %}
+
+{% block content %}
+<h2 class="my-4 text-center">Edit Staff User</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Update</button>
+</form>
+
+<a href="{% url 'manage_staff_users' %}" class="btn btn-secondary mt-3">Back</a>
+{% endblock %}

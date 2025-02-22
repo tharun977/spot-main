@@ -139,6 +139,9 @@
                     <ul class="navbar-nav gap-3">
                         <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'manage_parking_places' %}">Parking Places</a></li>
+                        {% if user.is_authenticated and user.is_superuser %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'manage_staff_users' %}">Manage Staff</a></li>
+                        {% endif %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'manage_parking_fees' %}">Parking Fees</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'logs' %}">Logs</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
