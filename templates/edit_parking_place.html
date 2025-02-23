@@ -4,11 +4,14 @@
 {% block title %}Edit Parking Place{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="text-center">Edit Parking Place</h2>
 
-    <form method="post">
-        {% csrf_token %}
+<h2 class="my-4 text-center">Edit Parking Place</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="card p-4">
+        <h4>Parking Place Details</h4>
         <div class="row g-3">
             <div class="col-md-6">{{ form.place_name|as_crispy_field }}</div>
             <div class="col-md-6">{{ form.location|as_crispy_field }}</div>
@@ -16,9 +19,17 @@
             <div class="col-md-4">{{ form.status|as_crispy_field }}</div>
             <div class="col-md-4">{{ form.num_lots|as_crispy_field }}</div>
         </div>
+    </div>
 
-        <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
-        <a href="{% url 'manage_parking_places' %}" class="btn btn-secondary mt-3">Cancel</a>
-    </form>
-</div>
+    <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+    <a href="{% url 'manage_parking_places' %}" class="btn btn-secondary mt-3">Cancel</a>
+</form>
+
+<style>
+    /* Hide Scrollbar */
+    ::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+
 {% endblock %}

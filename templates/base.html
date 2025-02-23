@@ -154,21 +154,35 @@
                         </button>
     
                         {% if user.is_authenticated %}
+                        {% load static %}
+
                         <!-- Profile Dropdown -->
-                        <div class="dropdown-container ms-3">
-                            <details class="dropdown right">
-                                <summary class="avatar">
-                                    <img src="{% if user.role == 'Admin' %}{% static 'images/default_user.png' %}{% else %}{{ user.get_avatar }}{% endif %}" 
-                                        alt="User Avatar" height="40">
-                                </summary>
-                                <ul>
-                                    <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user-circle"></i> My Profile</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'settings' %}"><i class="fas fa-cog"></i> Settings</a></li>
-                                    <li class="divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                                </ul>
-                            </details>
+                        <div class="dropdown ms-3">
+                            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% if user.role == 'Admin' %}{% static 'images/default_user.png' %}{% else %}{{ user.get_avatar }}{% endif %}" 
+                                    alt="User Avatar" class="rounded-circle" height="40" width="40">
+                            </a>
+                            
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="{% url 'profile' %}">
+                                        <i class="fas fa-user-circle me-2"></i> My Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="{% url 'settings' %}">
+                                        <i class="fas fa-cog me-2"></i> Settings
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center text-danger" href="{% url 'logout' %}">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
+
                         {% else %}
                         <a href="{% url 'login' %}" class="btn btn-outline-light ms-3">Login</a>
                         {% endif %}

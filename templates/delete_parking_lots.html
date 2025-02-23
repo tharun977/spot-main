@@ -4,11 +4,11 @@
 
 {% block content %}
 <div class="container my-4">
-    <h2>Manage Parking Lots for {{ parking_place.place_name }}</h2>
+    <h2 class="text-center">Manage Parking Lots for {{ parking_place.place_name }}</h2>
     
-    <form method="post">
+    <form method="post" id="deleteForm" onsubmit="return confirmDelete();">
         {% csrf_token %}
-        <table class="table">
+        <table class="table table-striped table-bordered text-center">
             <thead>
                 <tr>
                     <th>Select</th>
@@ -27,14 +27,27 @@
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="4">No parking lots available.</td>
+                        <td colspan="4" class="text-center">No parking lots available.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+
         <button type="submit" class="btn btn-danger">Delete Selected Lots</button>
     </form>
 
     <a href="{% url 'parking_lot_list' parking_place.id %}" class="btn btn-secondary mt-3">Back to Parking Lots</a>
 </div>
+
+<script>
+    function confirmDelete() {
+        let checkboxes = document.querySelectorAll('input[name="selected_lots"]:checked');
+        if (checkboxes.length === 0) {
+            alert("Please select at least one parking lot to delete.");
+            return false;
+        }
+        return confirm("Are you sure you want to delete the selected parking lot(s)? This action cannot be undone.");
+    }
+</script>
+
 {% endblock %}
