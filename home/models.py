@@ -136,14 +136,3 @@ class PaymentDetails(models.Model):
 
     def __str__(self):
         return f"₹{self.amount_paid} - {self.user}"
-
-# ========================== LOG DETAILS ========================== #
-class LogDetails(models.Model):
-    user = models.ForeignKey(
-        User, related_name="logs", on_delete=models.CASCADE
-    )
-    action = models.TextField(null=True, blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user} - {self.timestamp} - {self.action}"

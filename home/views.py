@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, LogDetails, VehicleType, AllowedVehicleType, ParkingFee
+from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, VehicleType, AllowedVehicleType, ParkingFee
 from .forms import ParkingPlaceForm, PaymentForm, ParkingLotFormSet, ParkingFeeForm, LoginForm, ProfileUpdateForm, ParkingLotForm, StaffRegistrationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 
+@login_required
 def home(request):
     return render(request, 'home.html')
 
@@ -249,10 +250,7 @@ def payments(request):
     payments = PaymentDetails.objects.all()
     return render(request, 'payments.html', {"payments": payments})
 
-@login_required
-def logs(request):
-    logs = LogDetails.objects.all()
-    return render(request, 'log.html', {"logs": logs})
+
 
 def about(request):
     return render(request, 'about.html')

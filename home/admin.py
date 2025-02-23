@@ -1,12 +1,11 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import ParkingPlace , LogDetails , PaymentDetails , ParkingDetails , VehicleType , ParkingLot , ParkingFee , User
+from .models import ParkingPlace , PaymentDetails , ParkingDetails , VehicleType , ParkingLot , ParkingFee , User
 
 admin.site.register(ParkingPlace)
 
 
-admin.site.register(LogDetails)
 
 
 admin.site.register(PaymentDetails)
