@@ -13,15 +13,10 @@
             <div class="col-md-6">{{ form.place_name|as_crispy_field }}</div>
             <div class="col-md-6">{{ form.location|as_crispy_field }}</div>
             <div class="col-md-4">{{ form.capacity|as_crispy_field }}</div>
-            <div class="col-md-4">{{ form.available_spaces|as_crispy_field }}</div>
             <div class="col-md-4">{{ form.status|as_crispy_field }}</div>
-
-            <!-- Allowed Vehicle Types -->
-            <div class="col-md-12">
-                <label class="form-label">Allowed Vehicle Types</label>
-                {{ form.vehicle_types }}
-            </div>
+            <div class="col-md-4">{{ form.num_lots|as_crispy_field }}</div>
         </div>
+
         <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
         <a href="{% url 'manage_parking_places' %}" class="btn btn-secondary mt-3">Cancel</a>
     </form>

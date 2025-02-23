@@ -22,27 +22,25 @@ class ParkingPlace(models.Model):
     place_name = models.CharField(max_length=255, unique=True)
     location = models.CharField(max_length=255)
     capacity = models.PositiveIntegerField()
-    available_spaces = models.PositiveIntegerField(default=0)
     status = models.BooleanField(default=True)  # True = Active, False = Inactive
 
     def __str__(self):
         return f"{self.place_name} ({'Active' if self.status else 'Inactive'})"
 
+    def total_parking_lots(self):
+        return self.parkinglot_set.count()  # Get total lots linked to this place
+
+
+
 # ========================== PARKING LOT ========================== #
 class ParkingLot(models.Model):
-    parking_place = models.ForeignKey(
-        ParkingPlace, related_name='parking_lots', on_delete=models.CASCADE, null=True, blank=True
-    )
-    lot_name = models.CharField(max_length=50, unique=True, null=True)
-    vehicle_number = models.CharField(
-        max_length=12, unique=True, null=True, blank=True, help_text="Format: YYBH####XX"
-    )
+    parking_place = models.ForeignKey(ParkingPlace, on_delete=models.CASCADE , null=True)
+    lot_number = models.PositiveIntegerField(null=True)  # Numbered lots (1,2,3,...)
+    vehicle_number = models.CharField(max_length=20, blank=True, null=True)
     status = models.BooleanField(default=False)  # False = Available, True = Occupied
-    status_before = models.CharField(max_length=255, null=True, blank=True)
-    status_after = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.lot_name} in {self.parking_place} - {'Occupied' if self.status else 'Available'}"
+        return f"Lot {self.lot_number} - {self.parking_place.place_name}"
 
 # ========================== VEHICLE TYPE ========================== #
 class VehicleType(models.Model):

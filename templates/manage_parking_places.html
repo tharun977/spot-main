@@ -7,7 +7,7 @@
 
 <form method="post" action="{% url 'manage_parking_places' %}" class="mb-4">
     {% csrf_token %}
-    
+
     <div class="card p-4">
         <h4>Parking Place Details</h4>
         {{ place_form|crispy }}
@@ -15,6 +15,7 @@
 
     <button type="submit" class="btn btn-primary mt-3">Add Parking Place</button>
 </form>
+
 
 <style>
     /* Hide Scrollbar */
@@ -30,9 +31,7 @@
             <th>Place Name</th>
             <th>Location</th>
             <th>Capacity</th>
-            <th>Available Spaces</th>
             <th>Status</th>
-            <th>Allowed Vehicles</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -46,15 +45,7 @@
             </td>
             <td>{{ parking_place.location }}</td>
             <td>{{ parking_place.capacity }}</td>
-            <td>{{ parking_place.available_spaces }}</td>
             <td>{{ parking_place.status|yesno:"Active,Inactive" }}</td>
-            <td>
-                {% for vehicle in parking_place.allowed_vehicle_types.all %}
-                    {{ vehicle.vehicle_type }}{% if not forloop.last %}, {% endif %}
-                {% empty %}
-                    <span class="text-muted">No vehicle types assigned</span>
-                {% endfor %}
-            </td>            
             <td>
                 <a href="{% url 'edit_parking_place' parking_place.pk %}" class="btn btn-warning btn-sm">Edit</a>
                 <form method="post" action="{% url 'delete_parking_place' parking_place.pk %}" class="d-inline" onsubmit="return confirmDelete();">
@@ -64,7 +55,7 @@
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="7" class="text-center">No parking places available.</td></tr>
+        <tr><td colspan="5" class="text-center">No parking places available.</td></tr>
         {% endfor %}
     </tbody>    
 </table>
