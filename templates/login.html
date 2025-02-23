@@ -2,13 +2,19 @@
 
 {% block content %}
 <style>
-  .login-container {
-    min-height: 100vh;
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
     background: linear-gradient(to right, #6a11cb, #2575fc);
+}
+
+.login-container {
+    min-height: 100vh; /* Keeps it centered properly */
     display: flex;
     justify-content: center;
     align-items: center;
-  }
+}
 
   .login-card {
     max-width: 450px;
