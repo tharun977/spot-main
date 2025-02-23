@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, VehicleType, AllowedVehicleType, ParkingFee
-from .forms import ParkingPlaceForm, PaymentForm, ParkingLotFormSet, ParkingFeeForm, LoginForm, ProfileUpdateForm, ParkingLotForm, StaffRegistrationForm
+from .forms import ParkingPlaceForm , ParkingFeeForm, LoginForm, ProfileUpdateForm,  StaffRegistrationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.views.decorators.csrf import csrf_protect
@@ -138,19 +138,20 @@ def delete_staff(request, staff_id):
 @login_required
 def manage_parking_places(request):
     if request.method == "POST":
-        place_form = ParkingPlaceForm(request.POST)
-        if place_form.is_valid():
-            parking_place = place_form.save()
+        form = ParkingPlaceForm(request.POST)
+        if form.is_valid():
+            form.save()  # Parking place + lots are created
             return redirect('manage_parking_places')
     else:
-        place_form = ParkingPlaceForm()
+        form = ParkingPlaceForm()
 
     parking_places = ParkingPlace.objects.all()
-
     return render(request, 'manage_parking_places.html', {
-        'place_form': place_form,
-        'parking_places': parking_places
+        'place_form': form,
+        'parking_places': parking_places,
     })
+
+
 
 @login_required
 def parking_place_detail(request, pk):
@@ -165,16 +166,18 @@ def parking_place_detail(request, pk):
 @login_required
 def edit_parking_place(request, pk):
     parking_place = get_object_or_404(ParkingPlace, pk=pk)
-
+    
     if request.method == "POST":
         form = ParkingPlaceForm(request.POST, instance=parking_place)
         if form.is_valid():
             form.save()
-            return redirect('manage_parking_places')
+            return redirect("manage_parking_places")
     else:
         form = ParkingPlaceForm(instance=parking_place)
 
-    return render(request, 'edit_parking_place.html', {'form': form, 'parking_place': parking_place})
+    return render(request, "edit_parking_place.html", {"form": form})
+
+
 
 @login_required
 def delete_parking_place(request, pk):
@@ -206,42 +209,50 @@ def manage_parking_fees(request):
 # ========================== PARKING LOTS ========================== #
 
 @login_required
-def parking_lot_list(request, pk):
-    parking_place = get_object_or_404(ParkingPlace, pk=pk)
+def parking_lot_list(request, parking_place_id):
+    parking_place = get_object_or_404(ParkingPlace, id=parking_place_id)
     parking_lots = ParkingLot.objects.filter(parking_place=parking_place)
-    return render(request, 'parking_lot_list.html', {'parking_place': parking_place, 'parking_lots': parking_lots})
+    allowed_vehicle_types = AllowedVehicleType.objects.filter(parking_place=parking_place).select_related('vehicle_type')
+
+    return render(request, 'parking_lot_list.html', {
+        'parking_place': parking_place,
+        'parking_lots': parking_lots,
+        'allowed_vehicle_types': allowed_vehicle_types
+    })
 
 @login_required
-def add_parking_lot(request, pk):
-    parking_place = get_object_or_404(ParkingPlace, pk=pk)
-    if request.method == 'POST':
-        form = ParkingLotForm(request.POST)
-        if form.is_valid():
-            parking_lot = form.save(commit=False)
-            parking_lot.parking_place = parking_place
-            parking_lot.save()
-            return redirect('parking_lot_list', pk=pk)
-    else:
-        form = ParkingLotForm()
-    return render(request, 'add_parking_lot.html', {'form': form, 'parking_place': parking_place})
+def delete_parking_lots(request, parking_place_id):
+    parking_place = get_object_or_404(ParkingPlace, id=parking_place_id)
+    parking_lots = ParkingLot.objects.filter(parking_place=parking_place)
+
+    if request.method == "POST":
+        selected_lots = request.POST.getlist('selected_lots')
+        ParkingLot.objects.filter(id__in=selected_lots).delete()
+        return redirect('parking_lot_list', parking_place_id=parking_place_id)
+
+    return render(request, 'delete_parking_lots.html', {'parking_place': parking_place, 'parking_lots': parking_lots})
 
 @login_required
-def edit_parking_lot(request, lot_pk):
-    parking_lot = get_object_or_404(ParkingLot, pk=lot_pk)
-    if request.method == 'POST':
-        form = ParkingLotForm(request.POST, instance=parking_lot)
-        if form.is_valid():
-            form.save()
-            return redirect('parking_lot_list', pk=parking_lot.parking_place.pk)
-    else:
-        form = ParkingLotForm(instance=parking_lot)
-    return render(request, 'edit_parking_lot.html', {'form': form, 'parking_lot': parking_lot})
+def add_multiple_parking_lots(request, parking_place_id):
+    parking_place = get_object_or_404(ParkingPlace, pk=parking_place_id)
 
-@login_required
-def delete_parking_lot(request, lot_pk):
-    parking_lot = get_object_or_404(ParkingLot, pk=lot_pk)
-    parking_lot.delete()
-    return redirect('parking_lot_list', pk=parking_lot.parking_place.pk)
+    if request.method == "POST":
+        try:
+            num_lots = int(request.POST.get("num_lots", 0))  # Get the number of lots from form
+            last_lot = ParkingLot.objects.filter(parking_place=parking_place).order_by('-lot_number').first()
+            start_number = last_lot.lot_number + 1 if last_lot else 1
+
+            for i in range(num_lots):
+                ParkingLot.objects.create(parking_place=parking_place, lot_number=start_number + i)
+
+            messages.success(request, f"✅ {num_lots} parking lots added successfully!")
+        except ValueError:
+            messages.error(request, "❌ Invalid input! Please enter a valid number.")
+
+        return redirect('parking_lot_list', parking_place_id=parking_place.pk)
+
+    return render(request, 'add_parking_lots.html', {'parking_place': parking_place})
+
 
 # ========================== PAYMENTS & LOGS ========================== #
 

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Parking Lots{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>Add Parking Lots for {{ parking_place.place_name }}</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="num_lots" class="form-label">Number of Lots:</label>
+            <input type="number" name="num_lots" id="num_lots" class="form-control" min="1" required>
+        </div>
+        <button type="submit" class="btn btn-success">Add Lots</button>
+    </form>
+
+    <a href="{% url 'parking_lot_list' parking_place.id %}" class="btn btn-secondary mt-3">Back to Parking Lots</a>
+</div>
+{% endblock %}

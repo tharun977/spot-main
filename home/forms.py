@@ -1,15 +1,14 @@
 from django import forms
 from django.forms import inlineformset_factory
 from .models import (
-    User, ParkingPlace, ParkingLot, PaymentDetails, ParkingFee, VehicleType , AllowedVehicleType
+    User, ParkingPlace, ParkingLot, PaymentDetails, ParkingFee, VehicleType
 )
-from django.contrib.auth.forms import  AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.forms import ModelForm
 from django.contrib.auth import authenticate
 
 
 # ========================== USER FORMS ========================== #
-
 
 class LoginForm(AuthenticationForm):
     def clean(self):
@@ -36,44 +35,48 @@ class ProfileUpdateForm(forms.ModelForm):
 
 # ========================== PARKING PLACE FORM ========================== #
 
-class ParkingPlaceForm(ModelForm):
-    vehicle_types = forms.ModelMultipleChoiceField(
-        queryset=VehicleType.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False,
-        label="Allowed Vehicle Types"
+class ParkingPlaceForm(forms.ModelForm):
+    num_lots = forms.IntegerField(
+        min_value=1, required=True, 
+        label="Number of Parking Lots",
+        help_text="Enter the total number of parking lots for this place."
     )
-
+    
     class Meta:
         model = ParkingPlace
-        fields = ['place_name', 'location', 'capacity', 'available_spaces', 'status']
+        fields = ['place_name', 'location', 'capacity', 'status']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        # If editing an existing ParkingPlace, prepopulate the allowed vehicle types
-        if self.instance.pk:
-            self.fields['vehicle_types'].initial = self.instance.allowed_vehicle_types.values_list('vehicle_type', flat=True)
+
+        if self.instance.pk:  # If editing an existing ParkingPlace
+            self.fields['num_lots'].initial = self.instance.parkinglot_set.count()
 
     def save(self, commit=True):
         parking_place = super().save(commit=False)
 
         if commit:
-            parking_place.save()  # Save ParkingPlace first to get an ID
+            parking_place.save()  # Save ParkingPlace first
 
-            # ✅ Fix: Ensure the Many-to-Many relation is updated on creation
-            self.save_m2m()  # Ensures Django saves M2M relationships
+            # Update parking lots
+            existing_lots = parking_place.parkinglot_set.all()
+            new_lot_count = self.cleaned_data['num_lots']
 
-            # ✅ Delete old AllowedVehicleType records (to avoid duplicates)
-            parking_place.allowed_vehicle_types.all().delete()
+            if new_lot_count > existing_lots.count():
+                # Add new lots
+                for i in range(existing_lots.count() + 1, new_lot_count + 1):
+                    ParkingLot.objects.create(parking_place=parking_place, lot_number=i)
 
-            # ✅ Add new AllowedVehicleType entries
-            for vehicle_type in self.cleaned_data['vehicle_types']:
-                AllowedVehicleType.objects.create(parking_place=parking_place, vehicle_type=vehicle_type)
+            elif new_lot_count < existing_lots.count():
+                # Remove extra lots
+                excess_lots = existing_lots.order_by('-lot_number')[:existing_lots.count() - new_lot_count]
+                for lot in excess_lots:
+                    lot.delete()
 
         return parking_place
 
 
+# ========================== STAFF REGISTRATION FORM ========================== #
 class StaffRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     avatar = forms.ImageField(required=False)  # ✅ Allow empty avatar
@@ -97,28 +100,7 @@ class StaffRegistrationForm(forms.ModelForm):
         return user
     
 
-# ========================== PARKING LOT FORM ========================== #
 
-class ParkingLotForm(forms.ModelForm):
-    class Meta:
-        model = ParkingLot
-        fields = ['lot_name', 'vehicle_number', 'status_before', 'status_after']
-        widgets = {
-            'lot_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'vehicle_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'YYBH####XX'}),
-            'status_before': forms.TextInput(attrs={'class': 'form-control'}),
-            'status_after': forms.TextInput(attrs={'class': 'form-control'}),
-        }
-
-
-
-# ✅ Inline Formset for Parking Lots inside a Parking Place
-ParkingLotFormSet = inlineformset_factory(
-    ParkingPlace, ParkingLot,
-    form=ParkingLotForm,
-    extra=2,  # Default extra parking lots
-    can_delete=True
-)
 
 
 # ========================== PAYMENT FORM ========================== #

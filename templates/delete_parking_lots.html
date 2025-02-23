@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Parking Lots{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>Manage Parking Lots for {{ parking_place.place_name }}</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Lot Number</th>
+                    <th>Vehicle Number</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lot in parking_lots %}
+                    <tr>
+                        <td><input type="checkbox" name="selected_lots" value="{{ lot.id }}"></td>
+                        <td>{{ lot.lot_number }}</td>
+                        <td>{{ lot.vehicle_number|default:"Empty" }}</td>
+                        <td>{{ lot.status|yesno:"Occupied,Available" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">No parking lots available.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-danger">Delete Selected Lots</button>
+    </form>
+
+    <a href="{% url 'parking_lot_list' parking_place.id %}" class="btn btn-secondary mt-3">Back to Parking Lots</a>
+</div>
+{% endblock %}
