@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views 
-from .views import parking_lot_list, manage_staff_users, edit_staff, delete_staff , admin_dashboard
+from .views import manage_staff_users, edit_staff, delete_staff , admin_dashboard , ParkingDetails
 
 
 urlpatterns = [
@@ -20,15 +20,20 @@ urlpatterns = [
 
 
     path('parking_places/', views.manage_parking_places, name='manage_parking_places'),
-    path('parking_places/<int:pk>/', views.parking_place_detail, name='parking_place_detail'),
     path('parking_places/<int:pk>/lots/', views.parking_lot_list, name='parking_lot_list'),
     path('parking_places/edit/<int:pk>/', views.edit_parking_place, name='edit_parking_place'),
     path('parking_places/delete/<int:pk>/', views.delete_parking_place, name='delete_parking_place'),
-    path('parking_fees/', views.manage_parking_fees, name='manage_parking_fees'),
+    
+    path('parking_lots/', views.parking_lot_list, name='parking_lot_list'),
+    path('parking_lots/<int:lot_id>/', views.parking_lot_details, name='parking_lot_details'),
+    path('parking_lots/<int:lot_id>/add/', views.add_parking, name='add_parking'),
+    path('parking/<uuid:parking_id>/checkout/', views.checkout_parking, name='checkout_parking'),
 
     path('manage_staff_users/', manage_staff_users, name='manage_staff_users'),
     path('edit_staff/<int:staff_id>/', edit_staff, name='edit_staff'),
     path('delete_staff/<int:staff_id>/', delete_staff, name='delete_staff'),
+
+    path('manage_parking_fees/', views.manage_parking_fees, name='manage_parking_fees'),
 
     path('payments/', views.payments, name='payments'),
     path('about/', views.about, name='about'),
