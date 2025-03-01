@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Parking Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Parking Details</h2>
+
+    <!-- Add Parking Form -->
+    <div class="mb-4">
+        <form method="POST" action="{% url 'add_parking' lot_id=parking_lot.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary mt-2">Add Parking</button>
+        </form>        
+    </div>
+
+    <!-- Parking Details Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Parking ID</th>
+                <th>Vehicle Reg No</th>
+                <th>Mobile Number</th>
+                <th>Vehicle Type</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>Parking Duration</th>
+                <th>Payment Status</th>
+                <th>Occupied By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for parking_detail in parking_details %}
+            <tr>
+                <td>{{ parking_detail.parking_id }}</td>
+                <td>{{ parking_detail.vehicle_reg_no }}</td>
+                <td>{{ parking_detail.mobile_number }}</td>
+                <td>{{ parking_detail.vehicle_type }}</td>
+                <td>{{ parking_detail.in_time }}</td>
+                <td>{{ parking_detail.out_time|default:"-" }}</td>
+                <td>{{ parking_detail.parking_duration|default:"-" }}</td>
+                <td>{{ parking_detail.payment_status|yesno:"Paid, Unpaid" }}</td>
+                <td>{{ parking_detail.occupied_by.username }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center">No parking details available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

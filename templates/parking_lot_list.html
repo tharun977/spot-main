@@ -19,10 +19,11 @@
         <div class="screen"></div>
         <div class="d-flex flex-wrap justify-content-center">
             {% for lot in parking_lots %}
-                <div class="seat parking-lot {% if lot.status %}occupied{% else %}available{% endif %}" 
-                    data-lot-id="{{ lot.id }}" data-price="10">
-                    <strong>{{ lot.lot_number }}</strong>
-                </div>
+                <a href="{% url 'parking_lot_details' lot.id %}">
+                    <div class="seat parking-lot {% if lot.status %}occupied{% else %}available{% endif %}" data-lot-id="{{ lot.id }}" data-price="10">
+                        <strong>{{ lot.lot_number }}</strong>
+                    </div>
+                </a>
             {% empty %}
                 <p class="text-center mt-3">No parking lots available.</p>
             {% endfor %}

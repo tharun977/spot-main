@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Add Parking Entry{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Add Parking Entry for {{ parking_lot.name }}</h2>
+
+    <form method="post" class="card p-4 shadow-sm">
+        {% csrf_token %}
+
+        <!-- Vehicle Registration Number -->
+        <div class="mb-3">
+            <label for="vehicle_reg_no" class="form-label">Vehicle Reg No:</label>
+            <input type="text" id="vehicle_reg_no" name="vehicle_reg_no" class="form-control" required 
+                   pattern="[A-Z0-9-]+" title="Enter a valid vehicle registration number (e.g., ABC-1234)">
+        </div>
+
+        <!-- Mobile Number -->
+        <div class="mb-3">
+            <label for="mobile_number" class="form-label">Mobile Number:</label>
+            <input type="tel" id="mobile_number" name="mobile_number" class="form-control" required 
+                   pattern="[0-9]{10}" title="Enter a 10-digit mobile number">
+        </div>
+
+        <!-- Vehicle Type -->
+        <div class="mb-3">
+            <label for="vehicle_type_id" class="form-label">Vehicle Type:</label>
+            <select name="vehicle_type_id" id="vehicle_type_id" class="form-select" required>
+                <option value="" disabled selected>🚗 Select Vehicle Type</option>
+                {% for type in vehicle_types %}
+                    <option value="{{ type.id }}">{{ type.name|default:type }}</option>
+                {% endfor %}
+            </select>            
+        </div>
+
+        <!-- Occupied By -->
+        <div class="mb-3">
+            <label for="occupied_by" class="form-label">Occupied By:</label>
+            <select id="occupied_by" name="occupied_by" class="form-select">
+                <option value="" disabled selected>👤 Select User</option>
+                {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Add Parking</button>
+            <a href="{% url 'parking_lot_details' lot_id=parking_lot.id %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

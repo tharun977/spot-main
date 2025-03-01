@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import User, ParkingPlace, ParkingLot, ParkingDetails, PaymentDetails, VehicleType, AllowedVehicleType, ParkingFee
-from .forms import ParkingPlaceForm , ParkingFeeForm, LoginForm, ProfileUpdateForm,  StaffRegistrationForm
+from .models import User, ParkingPlace, ParkingLot , PaymentDetails, VehicleType, AllowedVehicleType, ParkingFee , ParkingDetails
+from .forms import ParkingPlaceForm , ParkingFeeForm, LoginForm, ProfileUpdateForm,  StaffRegistrationForm , ParkingDetailsForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
+from django.utils.timezone import now
 
 @login_required
 def home(request):
@@ -154,17 +155,77 @@ def manage_parking_places(request):
 
 
 @login_required
-def parking_place_detail(request, pk):
-    parking_place = get_object_or_404(ParkingPlace, pk=pk)
-    parking_fees = ParkingFee.objects.filter(parking_place=parking_place)
-
-    return render(request, 'parking_place_detail.html', {
-        'parking_place': parking_place,
-        'parking_fees': parking_fees
+# Show parking details when a lot is clicked
+def parking_lot_details(request, lot_id):
+    parking_lot = ParkingLot.objects.get(id=lot_id)
+    parking_details = ParkingDetails.objects.filter(parking_lot=parking_lot)
+    vehicle_types = VehicleType.objects.all()  # ✅ Add this
+    
+    return render(request, 'parking_lot_details.html', {
+        "parking_lot": parking_lot,
+        "parking_details": parking_details,
+        "vehicle_types": vehicle_types  # ✅ Pass vehicle types to template
     })
+
+
+# Add parking entry linked to a parking lot
+@login_required
+def add_parking(request, lot_id):
+    parking_lot = get_object_or_404(ParkingLot, id=lot_id)
+    vehicle_types = VehicleType.objects.all()  # Fetch vehicle types
+    users = User.objects.all()  # Fetch users
+
+    if request.method == "POST":
+        vehicle_type_id = request.POST.get("vehicle_type_id")
+        print(f"Received Vehicle Type ID: {vehicle_type_id}")  # Debugging output
+
+        if not vehicle_type_id:
+            messages.error(request, "Please select a valid vehicle type.")
+            return redirect("add_parking", lot_id=lot_id)
+
+        try:
+            vehicle_type = VehicleType.objects.get(id=vehicle_type_id)
+        except VehicleType.DoesNotExist:
+            messages.error(request, "Selected Vehicle Type does not exist.")
+            return redirect("add_parking", lot_id=lot_id)
+
+        occupied_by_id = request.POST.get("occupied_by")
+        occupied_by = User.objects.get(id=occupied_by_id) if occupied_by_id else None
+
+        ParkingDetails.objects.create(
+            parking_lot=parking_lot,
+            vehicle_reg_no=request.POST.get("vehicle_reg_no"),
+            mobile_number=request.POST.get("mobile_number"),
+            vehicle_type=vehicle_type,  # ✅ Correctly assigned
+            occupied_by=occupied_by  # ✅ Correctly assigned
+        )
+        return redirect("parking_lot_details", lot_id=lot_id)
+
+    return render(request, "add_parking.html", {
+        "parking_lot": parking_lot,
+        "vehicle_types": vehicle_types,
+        "users": users
+    })
+
+
+# Checkout a vehicle
+def checkout_parking(request, parking_id):
+    parking = get_object_or_404(ParkingDetails, parking_id=parking_id)
+
+    if not parking.out_time:
+        parking.checkout()
+        
+        # Increase available spots in the parking lot
+        parking.parking_lot.available_spots += 1
+        parking.parking_lot.save()
+
+    return redirect('parking_lot_details', lot_id=parking.parking_lot.id)
+
+
 
 @login_required
 def edit_parking_place(request, pk):
+    
     parking_place = get_object_or_404(ParkingPlace, pk=pk)
     
     if request.method == "POST":

@@ -16,7 +16,6 @@
     <button type="submit" class="btn btn-primary mt-3">Add Parking Place</button>
 </form>
 
-
 <style>
     /* Hide Scrollbar */
     ::-webkit-scrollbar {
@@ -30,7 +29,6 @@
         <tr>
             <th>Place Name</th>
             <th>Location</th>
-            <th>Capacity</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
@@ -44,7 +42,6 @@
                 </a>
             </td>
             <td>{{ parking_place.location }}</td>
-            <td>{{ parking_place.capacity }}</td>
             <td>{{ parking_place.status|yesno:"Active,Inactive" }}</td>
             <td>
                 <a href="{% url 'edit_parking_place' parking_place.pk %}" class="btn btn-warning btn-sm">Edit</a>
@@ -55,7 +52,7 @@
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="5" class="text-center">No parking places available.</td></tr>
+        <tr><td colspan="4" class="text-center">No parking places available.</td></tr>
         {% endfor %}
     </tbody>    
 </table>

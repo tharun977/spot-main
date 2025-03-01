@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import inlineformset_factory
 from .models import (
-    User, ParkingPlace, ParkingLot, PaymentDetails, ParkingFee, VehicleType
+    User, ParkingPlace, ParkingLot, PaymentDetails, ParkingFee, VehicleType , ParkingDetails , validate_vehicle_number
 )
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import ModelForm
@@ -44,7 +44,7 @@ class ParkingPlaceForm(forms.ModelForm):
     
     class Meta:
         model = ParkingPlace
-        fields = ['place_name', 'location', 'capacity', 'status']
+        fields = ['place_name', 'location' , 'status']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -76,7 +76,42 @@ class ParkingPlaceForm(forms.ModelForm):
         return parking_place
 
 
+
+# ========================== PARKING DETAILS FORM ========================== #
+class ParkingDetailsForm(forms.ModelForm):
+    vehicle_reg_no = forms.CharField(
+        validators=[validate_vehicle_number],
+        widget=forms.TextInput(attrs={"placeholder": "KL60 AB1234", "class": "form-control"})
+    )
+
+    out_time = forms.DateTimeField(
+        required=False,  # ✅ Correct placement
+        widget=forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),
+        input_formats=["%Y-%m-%dT%H:%M"]
+    )
+
+    vehicle_type = forms.ModelChoiceField(
+        queryset=VehicleType.objects.all(),
+        widget=forms.Select(attrs={"class": "form-control"}),
+        empty_label="Select Vehicle Type"
+    )
+
+    occupied_by = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        widget=forms.Select(attrs={"class": "form-control"}),
+        empty_label="Select User"
+    )
+
+    class Meta:
+        model = ParkingDetails
+        fields = [  # ❌ Removed 'in_time'
+            "vehicle_reg_no", "mobile_number", "vehicle_type", 
+            "out_time", "payment_status", 
+            "parking_duration", "occupied_by"
+        ]
+
 # ========================== STAFF REGISTRATION FORM ========================== #
+
 class StaffRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     avatar = forms.ImageField(required=False)  # ✅ Allow empty avatar

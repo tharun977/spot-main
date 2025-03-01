@@ -3,6 +3,9 @@ from django.db import models
 from django.utils import timezone
 import re
 from django.core.exceptions import ValidationError
+import uuid
+from home.validators import validate_vehicle_number
+from django.utils.timezone import now
 
 # ========================== USER MODEL ========================== #
 class User(AbstractUser):
@@ -21,7 +24,6 @@ class User(AbstractUser):
 class ParkingPlace(models.Model):
     place_name = models.CharField(max_length=255, unique=True)
     location = models.CharField(max_length=255)
-    capacity = models.PositiveIntegerField()
     status = models.BooleanField(default=True)  # True = Active, False = Inactive
 
     def __str__(self):
@@ -40,7 +42,8 @@ class ParkingLot(models.Model):
     status = models.BooleanField(default=False)  # False = Available, True = Occupied
 
     def __str__(self):
-        return f"Lot {self.lot_number} - {self.parking_place.place_name}"
+        place_name = self.parking_place.place_name if self.parking_place else "No Place Assigned"
+        return f"Parking Lot {self.lot_number} - {place_name}"
 
 # ========================== VEHICLE TYPE ========================== #
 class VehicleType(models.Model):
@@ -64,35 +67,37 @@ class AllowedVehicleType(models.Model):
     def __str__(self):
         return f"{self.vehicle_type} allowed in {self.parking_place}"
 
-# ========================== VEHICLE NUMBER VALIDATION ========================== #
-def validate_vehicle_number(value):
-    pattern = r'^[A-Z]{2}[A-Z0-9]{2}[0-9]{4}[A-Z0-9]{2}$'
-    if not re.match(pattern, value):
-        raise ValidationError('Invalid vehicle number format. It should be in the format YYBH####XX.')
+# # ========================== VEHICLE NUMBER VALIDATION ========================== #
+# def validate_vehicle_number(value):
+#     pattern = r'^[A-Z]{2}[A-Z0-9]{2}[0-9]{4}[A-Z0-9]{2}$'
+#     if not re.match(pattern, value):
+#         raise ValidationError('Invalid vehicle number format. It should be in the format YYBH####XX.')
 
 # ========================== PARKING DETAILS ========================== #
 class ParkingDetails(models.Model):
-    parking_place = models.ForeignKey(
-        ParkingPlace, related_name="parking_details", on_delete=models.CASCADE
-    )
-    parking_lot = models.ForeignKey(
-        ParkingLot, related_name="parking_details", on_delete=models.CASCADE
-    )
-    vehicle_reg_no = models.CharField(
-        max_length=12, unique=True, null=True, blank=True, validators=[validate_vehicle_number]
-    )
-    vehicle_type = models.ForeignKey(
-        VehicleType, related_name="parked_vehicles", on_delete=models.CASCADE
-    )
-    in_time = models.DateTimeField(default=timezone.now)
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.CASCADE, related_name="parking_sessions")
+    parking_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    vehicle_reg_no = models.CharField(max_length=20, blank=True, null=True)
+    mobile_number = models.CharField(max_length=15)
+    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.CASCADE , null=True)
+    in_time = models.DateTimeField(auto_now_add=True)
     out_time = models.DateTimeField(null=True, blank=True)
+    payment_status = models.BooleanField(default=False)
     parking_duration = models.DurationField(null=True, blank=True)
-    occupied_by = models.ForeignKey(
-        User, related_name="parking_records", on_delete=models.CASCADE
-    )
+    occupied_by = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.vehicle_reg_no or 'Unknown'} at {self.parking_place}"
+        return f"{self.parking_lot.name} - {self.vehicle_reg_no}"
+
+    def checkout(self):
+        """Marks the parking as completed and calculates duration."""
+        if not self.out_time:
+            self.out_time = now()
+            self.parking_duration = self.out_time - self.in_time
+            self.payment_status = True
+            self.save()
+
+
 
 # ========================== PARKING FEE ========================== #
 class ParkingFee(models.Model):
