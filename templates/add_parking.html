@@ -22,7 +22,7 @@
             <input type="tel" id="mobile_number" name="mobile_number" class="form-control" required 
                    pattern="[0-9]{10}" title="Enter a 10-digit mobile number">
         </div>
-
+        
         <!-- Vehicle Type -->
         <div class="mb-3">
             <label for="vehicle_type_id" class="form-label">Vehicle Type:</label>
@@ -33,7 +33,7 @@
                 {% endfor %}
             </select>            
         </div>
-
+        
         <!-- Occupied By -->
         <div class="mb-3">
             <label for="occupied_by" class="form-label">Occupied By:</label>
@@ -52,4 +52,15 @@
         </div>
     </form>
 </div>
+
+<style>
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    body {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+    
 {% endblock %}
