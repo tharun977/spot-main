@@ -24,16 +24,17 @@
             <input type="tel" id="mobile_number" name="mobile_number" class="form-control" required>
         </div>
     
-        <!-- Vehicle Type -->
-        <div class="mb-3">
+         <!-- Vehicle Type -->
+         <div class="mb-3">
             <label for="vehicle_type_id" class="form-label">Vehicle Type:</label>
             <select name="vehicle_type_id" id="vehicle_type_id" class="form-select" required>
                 <option value="" disabled selected>🚗 Select Vehicle Type</option>
                 {% for type in vehicle_types %}
-                    <option value="{{ type.id }}">{{ type.name }}</option>
+                    <option value="{{ type.id }}">{{ type.name|default:type }}</option>
                 {% endfor %}
             </select>            
         </div>
+        
         
         <!-- Occupied By -->
         <div class="mb-3">
