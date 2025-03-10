@@ -63,8 +63,14 @@
                     {% endif %}
                 </td>
 
-                <!-- Payment Amount (Fetched from Parking Fee Model) -->
-                <td>{{ parking_detail.payment_amount|default:"-" }}</td>
+                <!-- Payment Amount (With ₹ Symbol) -->
+                <td>
+                    {% if parking_detail.payment_amount %}
+                        ₹{{ parking_detail.payment_amount }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
 
                 <!-- Payment Status & Pay Button -->
                 <td>

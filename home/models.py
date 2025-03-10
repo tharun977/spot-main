@@ -6,6 +6,8 @@ from django.core.exceptions import ValidationError
 import uuid
 from home.validators import validate_vehicle_number
 from django.utils.timezone import now
+from datetime import timedelta
+from django.utils.timezone import is_aware, make_aware
 
 # ========================== USER MODEL ========================== #
 class User(AbstractUser):
@@ -80,23 +82,49 @@ class ParkingDetails(models.Model):
     parking_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     vehicle_reg_no = models.CharField(max_length=20, blank=True, null=True)
     mobile_number = models.CharField(max_length=15)
-    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.CASCADE , null=True)
+    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.CASCADE, null=True)
     in_time = models.DateTimeField(auto_now_add=True)
     out_time = models.DateTimeField(null=True, blank=True)
     payment_status = models.BooleanField(default=False)
-    parking_duration = models.DurationField(null=True, blank=True)
-    occupied_by = models.CharField(max_length=255, blank=True, null=True)  # Allow text input
+    parking_duration = models.DurationField(null=True, blank=True)  # Stores timedelta
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # New field
+    occupied_by = models.CharField(max_length=255, blank=True, null=True)  
+
+    def calculate_parking_duration(self):
+        """Ensure both datetimes are timezone-aware before subtraction."""
+        if self.in_time and self.out_time:
+            in_time = make_aware(self.in_time) if not is_aware(self.in_time) else self.in_time
+            out_time = make_aware(self.out_time) if not is_aware(self.out_time) else self.out_time
+            duration = out_time - in_time
+            return max(duration, timedelta(0))  # Prevents negative duration
+        return None
+
+    def calculate_payment(self, rate_per_hour=10):
+        """Calculate payment amount based on parking duration and rate."""
+        duration = self.calculate_parking_duration()
+        if duration:
+            hours_parked = duration.total_seconds() / 3600  # Convert to hours
+            return round(hours_parked * rate_per_hour, 2)  # Rounded to 2 decimal places
+        return None
+
+    def save(self, *args, **kwargs):
+        """Auto-calculate duration and payment before saving."""
+        self.parking_duration = self.calculate_parking_duration()
+        self.payment_amount = self.calculate_payment()
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.parking_lot.name} - {self.vehicle_reg_no}"
 
-    def checkout(self):
-        """Marks the parking as completed and calculates duration."""
-        if not self.out_time:
-            self.out_time = now()
-            self.parking_duration = self.out_time - self.in_time
-            self.payment_status = True
-            self.save()
+
+    # def checkout(self):
+    #     """Marks the parking as completed and calculates duration."""
+    #     if not self.out_time:
+    #         self.out_time = now()
+    #         self.parking_duration = self.out_time - self.in_time
+    #         self.payment_status = True
+    #         self.save()
 
 
 

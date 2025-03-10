@@ -6,6 +6,7 @@ from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.utils.timezone import now
+from datetime import datetime
 
 @login_required
 def home(request):
@@ -315,14 +316,42 @@ def add_multiple_parking_lots(request, parking_place_id):
 
 
 
+from django.utils.timezone import make_aware
+from datetime import datetime
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+
 def update_out_time(request, parking_id):
-    parking_entry = get_object_or_404(ParkingDetails, parking_id=parking_id)  # Ensure UUID handling
-    if request.method == "POST":
-        parking_entry.out_time = request.POST.get("out_time")
-        parking_entry.save()
-        
-        # ✅ Redirect using the correct integer lot_id instead of UUID parking_id
-        return redirect("parking_lot_details", lot_id=parking_entry.parking_lot.id)
+    if request.method == 'POST':
+        parking_detail = get_object_or_404(ParkingDetails, parking_id=parking_id)
+
+        out_time_str = request.POST.get('out_time')
+        if not out_time_str:
+            messages.error(request, "Out time is required.")
+            return redirect('parking_lot_details', lot_id=parking_detail.parking_lot.id)
+
+        try:
+            # Convert the naive datetime to an aware datetime
+            naive_out_time = datetime.strptime(out_time_str.replace('T', ' '), "%Y-%m-%d %H:%M")
+            out_time = make_aware(naive_out_time)  # Convert to timezone-aware datetime
+
+            # Ensure in_time is also timezone-aware
+            if parking_detail.in_time and out_time <= parking_detail.in_time:
+                messages.error(request, "Out time must be later than In time.")
+                return redirect('parking_lot_details', lot_id=parking_detail.parking_lot.id)
+
+            parking_detail.out_time = out_time
+            duration = (out_time - parking_detail.in_time).total_seconds() / 60  # Convert to minutes
+            parking_detail.parking_duration = duration
+            parking_detail.save()
+
+            messages.success(request, "Out time updated successfully.")
+
+        except ValueError:
+            messages.error(request, "Invalid date format. Please select a valid date and time.")
+
+    return redirect('parking_lot_details', lot_id=parking_detail.parking_lot.id)
+
 
 
 def make_payment(request, parking_id):
