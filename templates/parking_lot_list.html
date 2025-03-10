@@ -20,7 +20,9 @@
         <div class="d-flex flex-wrap justify-content-center">
             {% for lot in parking_lots %}
                 <a href="{% url 'parking_lot_details' lot.id %}">
-                    <div class="seat parking-lot {% if lot.status %}occupied{% else %}available{% endif %}" data-lot-id="{{ lot.id }}" data-price="10">
+                    <div class="seat parking-lot {% if lot.status %}occupied{% else %}available{% endif %}" 
+                        data-lot-id="{{ lot.id }}" data-price="10"
+                        {% if lot.status %}style="background-color: #ff4d4d !important;"{% endif %}">
                         <strong>{{ lot.lot_number }}</strong>
                     </div>
                 </a>
