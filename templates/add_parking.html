@@ -34,16 +34,14 @@
             </select>            
         </div>
         
-        <!-- Occupied By -->
+        <!-- Occupied By (Manual Entry) -->
         <div class="mb-3">
             <label for="occupied_by" class="form-label">Occupied By:</label>
-            <select id="occupied_by" name="occupied_by" class="form-select">
-                <option value="" disabled selected>👤 Select User</option>
-                {% for user in users %}
-                    <option value="{{ user.id }}">{{ user.username }}</option>
-                {% endfor %}
-            </select>
+            <input type="text" id="occupied_by" name="occupied_by" class="form-control" required>
         </div>
+
+        <!-- Authorized By (Current User) - Hidden Field -->
+        <input type="hidden" name="authorized_by" value="{{ request.user.username }}">
 
         <!-- Buttons -->
         <div class="d-flex gap-2">
@@ -54,13 +52,8 @@
 </div>
 
 <style>
-    ::-webkit-scrollbar {
-        display: none;
-    }
-    body {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
+    ::-webkit-scrollbar { display: none; }
+    body { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
-    
+
 {% endblock %}

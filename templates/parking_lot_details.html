@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block title %}Parking Details{% endblock %}
 
 {% block content %}
@@ -24,8 +25,11 @@
                 <th>In Time</th>
                 <th>Out Time</th>
                 <th>Parking Duration</th>
+                <th>Payment Amount</th>
                 <th>Payment Status</th>
                 <th>Occupied By</th>
+                <th>Authorized By</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -36,18 +40,58 @@
                 <td>{{ parking_detail.mobile_number }}</td>
                 <td>{{ parking_detail.vehicle_type }}</td>
                 <td>{{ parking_detail.in_time }}</td>
-                <td>{{ parking_detail.out_time|default:"-" }}</td>
-                <td>{{ parking_detail.parking_duration|default:"-" }}</td>
-                <td>{{ parking_detail.payment_status|yesno:"Paid, Unpaid" }}</td>
-                <td>{{ parking_detail.occupied_by.username }}</td>
+
+                <!-- Update Out Time -->
+                <td>
+                    {% if parking_detail.out_time %}
+                        {{ parking_detail.out_time }}
+                    {% else %}
+                        <form method="POST" action="{% url 'update_out_time' parking_detail.parking_id %}">
+                            {% csrf_token %}
+                            <input type="datetime-local" name="out_time" required class="form-control">
+                            <button type="submit" class="btn btn-sm btn-warning mt-1">Update</button>
+                        </form>
+                    {% endif %}
+                </td>
+
+                <!-- Parking Duration -->
+                <td>
+                    {% if parking_detail.parking_duration %}
+                        {{ parking_detail.parking_duration }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <!-- Payment Amount (Fetched from Parking Fee Model) -->
+                <td>{{ parking_detail.payment_amount|default:"-" }}</td>
+
+                <!-- Payment Status & Pay Button -->
+                <td>
+                    {% if parking_detail.payment_status %}
+                        ✅ Paid
+                    {% else %}
+                        <form method="POST" action="{% url 'make_payment' parking_detail.parking_id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-success">Pay Now</button>
+                        </form>
+                    {% endif %}
+                </td>
+
+                <td>{{ parking_detail.occupied_by }}</td>
+                <td>{{ parking_detail.authorized_by }}</td>
+
+                <!-- Actions Column -->
+                <td>
+                    <a href="{% url 'delete_parking' parking_detail.parking_id %}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="9" class="text-center">No parking details available.</td>
+                <td colspan="12" class="text-center">No parking details available.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
 </div>
 {% endblock %}

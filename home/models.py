@@ -36,14 +36,15 @@ class ParkingPlace(models.Model):
 
 # ========================== PARKING LOT ========================== #
 class ParkingLot(models.Model):
-    parking_place = models.ForeignKey(ParkingPlace, on_delete=models.CASCADE , null=True)
-    lot_number = models.PositiveIntegerField(null=True)  # Numbered lots (1,2,3,...)
+    id = models.AutoField(primary_key=True)  # Use AutoField instead of UUIDField
+    parking_place = models.ForeignKey(ParkingPlace, on_delete=models.CASCADE, null=True)
+    lot_number = models.PositiveIntegerField(null=True)
     vehicle_number = models.CharField(max_length=20, blank=True, null=True)
     status = models.BooleanField(default=False)  # False = Available, True = Occupied
-
     def __str__(self):
         place_name = self.parking_place.place_name if self.parking_place else "No Place Assigned"
         return f"Parking Lot {self.lot_number} - {place_name}"
+    
 
 # ========================== VEHICLE TYPE ========================== #
 class VehicleType(models.Model):
@@ -84,7 +85,7 @@ class ParkingDetails(models.Model):
     out_time = models.DateTimeField(null=True, blank=True)
     payment_status = models.BooleanField(default=False)
     parking_duration = models.DurationField(null=True, blank=True)
-    occupied_by = models.CharField(max_length=100, blank=True, null=True)
+    occupied_by = models.CharField(max_length=255, blank=True, null=True)  # Allow text input
 
     def __str__(self):
         return f"{self.parking_lot.name} - {self.vehicle_reg_no}"

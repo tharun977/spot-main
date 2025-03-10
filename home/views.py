@@ -156,15 +156,15 @@ def manage_parking_places(request):
 
 @login_required
 # Show parking details when a lot is clicked
-def parking_lot_details(request, lot_id):
-    parking_lot = ParkingLot.objects.get(id=lot_id)
+def parking_lot_details(request, lot_id):  
+    parking_lot = get_object_or_404(ParkingLot, id=lot_id)  # Ensure ID is an integer
     parking_details = ParkingDetails.objects.filter(parking_lot=parking_lot)
-    vehicle_types = VehicleType.objects.all()  # ✅ Add this
-    
+    vehicle_types = VehicleType.objects.all()
+
     return render(request, 'parking_lot_details.html', {
         "parking_lot": parking_lot,
         "parking_details": parking_details,
-        "vehicle_types": vehicle_types  # ✅ Pass vehicle types to template
+        "vehicle_types": vehicle_types
     })
 
 
@@ -189,8 +189,7 @@ def add_parking(request, lot_id):
             messages.error(request, "Selected Vehicle Type does not exist.")
             return redirect("add_parking", lot_id=lot_id)
 
-        occupied_by_id = request.POST.get("occupied_by")
-        occupied_by = User.objects.get(id=occupied_by_id) if occupied_by_id else None
+        occupied_by = request.POST.get("occupied_by", "").strip()  # Get input and strip spaces
 
         ParkingDetails.objects.create(
             parking_lot=parking_lot,
@@ -313,6 +312,35 @@ def add_multiple_parking_lots(request, parking_place_id):
         return redirect('parking_lot_list', parking_place_id=parking_place.pk)
 
     return render(request, 'add_parking_lots.html', {'parking_place': parking_place})
+
+
+
+def update_out_time(request, parking_id):
+    parking_entry = get_object_or_404(ParkingDetails, parking_id=parking_id)  # Ensure UUID handling
+    if request.method == "POST":
+        parking_entry.out_time = request.POST.get("out_time")
+        parking_entry.save()
+        
+        # ✅ Redirect using the correct integer lot_id instead of UUID parking_id
+        return redirect("parking_lot_details", lot_id=parking_entry.parking_lot.id)
+
+
+def make_payment(request, parking_id):
+    parking_entry = get_object_or_404(ParkingDetails, id=parking_id)
+    parking_fee = ParkingFee.objects.get(vehicle_type=parking_entry.vehicle_type)
+
+    # Calculate Parking Duration and Payment Amount
+    duration_hours = ((parking_entry.out_time - parking_entry.in_time).total_seconds()) / 3600
+    parking_entry.payment_amount = round(duration_hours * parking_fee.rate_per_hour, 2)
+    parking_entry.payment_status = True
+    parking_entry.save()
+    
+    return redirect("parking_lot_details", lot_id=parking_entry.lot.id)
+
+def delete_parking(request, parking_id):
+    parking_entry = get_object_or_404(ParkingDetails, parking_id=parking_id)  # UUID
+    parking_entry.delete()
+    return redirect("parking_lot_list")  # Redirect to the list page after deletion
 
 
 # ========================== PAYMENTS & LOGS ========================== #
