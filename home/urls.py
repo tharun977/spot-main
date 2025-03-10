@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views 
-from .views import manage_staff_users, edit_staff, delete_staff , admin_dashboard , ParkingDetails , update_out_time , make_payment , delete_parking , parking_lot_details
+from .views import manage_staff_users, edit_staff, delete_staff , admin_dashboard , ParkingDetails , update_out_time , make_payment , delete_parking , parking_lot_details , parking_lot_details 
 
 
 urlpatterns = [
@@ -33,6 +33,8 @@ urlpatterns = [
 
     path('update_out_time/<uuid:parking_id>/', update_out_time, name='update_out_time'),
     path('make_payment/<uuid:parking_id>/', make_payment, name='make_payment'),
+
+    path('parking_lots/<int:lot_id>/', views.parking_lot_details, name='parking_lot_details'),
 
     path('manage_staff_users/', manage_staff_users, name='manage_staff_users'),
     path('edit_staff/<int:staff_id>/', edit_staff, name='edit_staff'),
