@@ -6,7 +6,9 @@ from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.utils.timezone import now
-from datetime import datetime
+from datetime import datetime 
+from django.utils.timezone import make_aware
+
 
 @login_required
 def home(request):
@@ -172,40 +174,30 @@ def parking_lot_details(request, lot_id):
 # Add parking entry linked to a parking lot
 @login_required
 def add_parking(request, lot_id):
-    parking_lot = get_object_or_404(ParkingLot, id=lot_id)
-    vehicle_types = VehicleType.objects.all()  # Fetch vehicle types
-    users = User.objects.all()  # Fetch users
+    parking_lot = get_object_or_404(ParkingLot, id=lot_id)  # Fetch the parking lot instance
 
-    if request.method == "POST":
-        vehicle_type_id = request.POST.get("vehicle_type_id")
-        print(f"Received Vehicle Type ID: {vehicle_type_id}")  # Debugging output
+    if request.method == 'POST':
+        vehicle_reg_no = request.POST.get('vehicle_reg_no')
+        mobile_number = request.POST.get('mobile_number')
+        vehicle_type_id = request.POST.get('vehicle_type_id')
+        occupied_by = request.POST.get('occupied_by')
 
-        if not vehicle_type_id:
-            messages.error(request, "Please select a valid vehicle type.")
-            return redirect("add_parking", lot_id=lot_id)
+        # Ensure vehicle_type is retrieved correctly
+        vehicle_type = get_object_or_404(VehicleType, id=vehicle_type_id)
 
-        try:
-            vehicle_type = VehicleType.objects.get(id=vehicle_type_id)
-        except VehicleType.DoesNotExist:
-            messages.error(request, "Selected Vehicle Type does not exist.")
-            return redirect("add_parking", lot_id=lot_id)
-
-        occupied_by = request.POST.get("occupied_by", "").strip()  # Get input and strip spaces
-
-        ParkingDetails.objects.create(
-            parking_lot=parking_lot,
-            vehicle_reg_no=request.POST.get("vehicle_reg_no"),
-            mobile_number=request.POST.get("mobile_number"),
-            vehicle_type=vehicle_type,  # ✅ Correctly assigned
-            occupied_by=occupied_by  # ✅ Correctly assigned
+        # ✅ Corrected: Include parking_lot while creating ParkingDetails
+        parking_entry = ParkingDetails.objects.create(
+            parking_lot=parking_lot,  # ✅ This ensures the foreign key is set
+            vehicle_reg_no=vehicle_reg_no,
+            mobile_number=mobile_number,
+            vehicle_type=vehicle_type,
+            occupied_by=occupied_by,
+            authorized_by=request.user
         )
-        return redirect("parking_lot_details", lot_id=lot_id)
+        
+        return redirect('parking_lot_details', lot_id=lot_id)
 
-    return render(request, "add_parking.html", {
-        "parking_lot": parking_lot,
-        "vehicle_types": vehicle_types,
-        "users": users
-    })
+    return render(request, 'add_parking.html', {'parking_lot': parking_lot})
 
 
 # Checkout a vehicle
@@ -316,10 +308,7 @@ def add_multiple_parking_lots(request, parking_place_id):
 
 
 
-from django.utils.timezone import make_aware
-from datetime import datetime
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
+
 
 def update_out_time(request, parking_id):
     if request.method == 'POST':

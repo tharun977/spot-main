@@ -89,6 +89,8 @@ class ParkingDetails(models.Model):
     parking_duration = models.DurationField(null=True, blank=True)  # Stores timedelta
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # New field
     occupied_by = models.CharField(max_length=255, blank=True, null=True)  
+    authorized_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Ensure this exists
+    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.CASCADE)  # Ensure this exists
 
     def calculate_parking_duration(self):
         """Ensure both datetimes are timezone-aware before subtraction."""

@@ -85,7 +85,15 @@
                 </td>
 
                 <td>{{ parking_detail.occupied_by }}</td>
-                <td>{{ parking_detail.authorized_by }}</td>
+
+                <!-- Display Authorized By Properly -->
+                <td>
+                    {% if parking_detail.authorized_by %}
+                        {{ parking_detail.authorized_by.get_full_name|default:parking_detail.authorized_by.username }}
+                    {% else %}
+                        Not Assigned
+                    {% endif %}
+                </td>
 
                 <!-- Actions Column -->
                 <td>
