@@ -174,7 +174,8 @@ def parking_lot_details(request, lot_id):
 # Add parking entry linked to a parking lot
 @login_required
 def add_parking(request, lot_id):
-    parking_lot = get_object_or_404(ParkingLot, id=lot_id)  # Fetch the parking lot instance
+    parking_lot = get_object_or_404(ParkingLot, id=lot_id)  # Fetch parking lot instance
+    vehicle_types = VehicleType.objects.all()  # Fetch all vehicle types
 
     if request.method == 'POST':
         vehicle_reg_no = request.POST.get('vehicle_reg_no')
@@ -182,22 +183,34 @@ def add_parking(request, lot_id):
         vehicle_type_id = request.POST.get('vehicle_type_id')
         occupied_by = request.POST.get('occupied_by')
 
-        # Ensure vehicle_type is retrieved correctly
-        vehicle_type = get_object_or_404(VehicleType, id=vehicle_type_id)
+        # ✅ Check if `vehicle_type_id` exists
+        try:
+            vehicle_type = VehicleType.objects.get(id=vehicle_type_id)
+        except VehicleType.DoesNotExist:
+            return render(request, 'add_parking.html', {
+                'parking_lot': parking_lot,
+                'vehicle_types': vehicle_types,
+                'error': "Selected Vehicle Type does not exist."
+            })
 
-        # ✅ Corrected: Include parking_lot while creating ParkingDetails
-        parking_entry = ParkingDetails.objects.create(
-            parking_lot=parking_lot,  # ✅ This ensures the foreign key is set
+        # ✅ Create Parking Entry
+        ParkingDetails.objects.create(
+            parking_lot=parking_lot,
             vehicle_reg_no=vehicle_reg_no,
             mobile_number=mobile_number,
             vehicle_type=vehicle_type,
             occupied_by=occupied_by,
             authorized_by=request.user
         )
-        
+
         return redirect('parking_lot_details', lot_id=lot_id)
 
-    return render(request, 'add_parking.html', {'parking_lot': parking_lot})
+    # ✅ Ensure `vehicle_types` is passed to the template
+    return render(request, 'add_parking.html', {
+        'parking_lot': parking_lot,
+        'vehicle_types': vehicle_types
+    })
+
 
 
 # Checkout a vehicle
