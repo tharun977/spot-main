@@ -3,60 +3,106 @@
 {% block title %}Add Parking Entry{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Add Parking Entry for {{ parking_lot.name }}</h2>
-
-    <form method="post" class="card p-4 shadow-sm">
-        {% csrf_token %}
-        
-        <!-- Hidden input to store parking lot ID -->
-        <input type="hidden" name="parking_lot_id" value="{{ parking_lot.id }}">
-        
-        <!-- Vehicle Registration Number -->
-        <div class="mb-3">
-            <label for="vehicle_reg_no" class="form-label">Vehicle Reg No:</label>
-            <input type="text" id="vehicle_reg_no" name="vehicle_reg_no" class="form-control" required>
-        </div>
-    
-        <!-- Mobile Number -->
-        <div class="mb-3">
-            <label for="mobile_number" class="form-label">Mobile Number:</label>
-            <input type="tel" id="mobile_number" name="mobile_number" class="form-control" required>
-        </div>
-    
-         <!-- Vehicle Type -->
-         <div class="mb-3">
-            <label for="vehicle_type_id" class="form-label">Vehicle Type:</label>
-            <select name="vehicle_type_id" id="vehicle_type_id" class="form-select" required>
-                <option value="" disabled selected>🚗 Select Vehicle Type</option>
-                {% for type in vehicle_types %}
-                    <option value="{{ type.id }}">{{ type.name|default:type }}</option>
-                {% endfor %}
-            </select>            
-        </div>
-        
-        
-        <!-- Occupied By -->
-        <div class="mb-3">
-            <label for="occupied_by" class="form-label">Occupied By:</label>
-            <input type="text" id="occupied_by" name="occupied_by" class="form-control" required>
-        </div>
-    
-        <!-- Authorized By (Hidden Field for Security) -->
-        <input type="hidden" name="authorized_by" value="{{ request.user.id }}">
-    
-        <!-- Buttons -->
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Add Parking</button>
-            <a href="{% url 'parking_lot_details' lot_id=parking_lot.id %}" class="btn btn-secondary">Cancel</a>
-        </div>
-    </form>    
+<!-- Hero Section -->
+<div class="jumbotron text-center hero-section">
+    <h1 class="display-4 fw-bold animated fadeInDown mb-3">Add Parking Entry</h1>
+    <p class="lead animated fadeIn">Register a vehicle for parking at {{ parking_lot.name }}</p>
 </div>
 
-<!-- Hide Scrollbar -->
+<!-- Parking Form -->
+<div class="container mt-3">
+    <div class="card glassmorphism-form p-3 shadow-lg">
+        <h3 class="text-center fw-bold mb-3">Parking Details</h3>
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Hidden input to store parking lot ID -->
+            <input type="hidden" name="parking_lot_id" value="{{ parking_lot.id }}">
+            
+            <!-- Vehicle Registration Number -->
+            <div class="mb-2">
+                <label for="vehicle_reg_no" class="form-label">Vehicle Reg No:</label>
+                <input type="text" id="vehicle_reg_no" name="vehicle_reg_no" class="form-control" required>
+            </div>
+        
+            <!-- Mobile Number -->
+            <div class="mb-2">
+                <label for="mobile_number" class="form-label">Mobile Number:</label>
+                <input type="tel" id="mobile_number" name="mobile_number" class="form-control" required>
+            </div>
+        
+            <!-- Vehicle Type -->
+            <div class="mb-2">
+                <label for="vehicle_type_id" class="form-label">Vehicle Type:</label>
+                <select name="vehicle_type_id" id="vehicle_type_id" class="form-select" required>
+                    <option value="" disabled selected>🚗 Select Vehicle Type</option>
+                    {% for type in vehicle_types %}
+                        <option value="{{ type.id }}">{{ type.name|default:type }}</option>
+                    {% endfor %}
+                </select>            
+            </div>
+            
+            <!-- Occupied By -->
+            <div class="mb-2">
+                <label for="occupied_by" class="form-label">Occupied By:</label>
+                <input type="text" id="occupied_by" name="occupied_by" class="form-control" required>
+            </div>
+        
+            <!-- Authorized By (Hidden Field for Security) -->
+            <input type="hidden" name="authorized_by" value="{{ request.user.id }}">
+        
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between mt-3">
+                <button type="submit" class="btn btn-primary">Add Parking</button>
+                <a href="{% url 'parking_lot_details' lot_id=parking_lot.id %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>  
+</div>
+
+<!-- Custom Styling -->
 <style>
-    ::-webkit-scrollbar { display: none; }
-    body { -ms-overflow-style: none; scrollbar-width: none; }
+    /* Hide scrollbar */
+    ::-webkit-scrollbar { width: 0px; background: transparent; }
+    body { overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none; background: linear-gradient(135deg, #c1c3d4, #23177d); color: #EAEAEA; font-family: 'Poppins', sans-serif; }
+
+    /* Hero Section */
+    .hero-section {
+        padding: 2rem 2rem;
+        color: white;
+        text-align: center;
+    }
+
+    /* Frosted Glass Effect */
+    .glassmorphism-form {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+        transition: 0.3s ease-in-out;
+    }
+
+    .glassmorphism-form:hover {
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    }
+
+    /* Reduce space between form elements */
+    .form-label { font-weight: 500; }
+    .form-control, .form-select { padding: 8px; }
+    .mb-2 { margin-bottom: 0.5rem !important; }
+
+    /* Button Styling */
+    .btn-primary, .btn-secondary {
+        padding: 8px 15px;
+        border-radius: 5px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-primary:hover { background: #0056b3; transform: scale(1.05); }
+    .btn-secondary:hover { background: #545b62; transform: scale(1.05); }
 </style>
 
 {% endblock %}

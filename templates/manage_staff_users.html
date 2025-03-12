@@ -3,24 +3,24 @@
 {% block title %}Manage Staff{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2 class="my-4 text-center">Manage Staff Users</h2>
+<div class="container mt-5">
+    <h2 class="text-center fw-bold page-title">Manage Staff Users</h2>
 
     <!-- Add Staff Form -->
-    <div class="card shadow-sm p-4 mb-4">
-        <h4 class="mb-3">Add New Staff</h4>
+    <div class="card glassmorphism-form p-4 my-4">
+        <h4 class="form-title">Add New Staff</h4>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form|crispy }}
-            <button type="submit" class="btn btn-primary w-100">Add Staff</button>
+            <button type="submit" class="btn stylish-btn w-auto d-block mx-auto mt-3">Add Staff</button>
         </form>
     </div>
 
     <!-- List of Staff Users -->
-    <h3 class="mb-3">Existing Staff Users</h3>
+    <h3 class="section-title mt-4">Existing Staff Users</h3>
     <div class="table-responsive">
-        <table class="table table-hover table-bordered text-center align-middle">
-            <thead class="table-light">
+        <table class="table custom-table">
+            <thead>
                 <tr>
                     <th>Username</th>
                     <th>Email</th>
@@ -33,17 +33,149 @@
                     <td>{{ staff.username }}</td>
                     <td>{{ staff.email }}</td>
                     <td>
-                        <a href="{% url 'edit_staff' staff.pk %}" class="btn btn-warning btn-sm me-2">Edit</a>
-                        <a href="{% url 'delete_staff' staff.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="{% url 'edit_staff' staff.pk %}" class="btn stylish-btn-edit me-2">Edit</a>
+                        <a href="{% url 'delete_staff' staff.pk %}" class="btn stylish-btn-delete">Delete</a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="3" class="text-center text-muted">No staff users found.</td>
+                    <td colspan="3" class="no-data text-center">No staff users found.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
+<!-- Custom Styling -->
+<style>
+    /* Hide scrollbar */
+    ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+    }
+
+    body {
+        overflow-y: auto; /* Allow scrolling but hide scrollbar */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        background: linear-gradient(135deg, #c1c3d4, #23177d);
+        color: #EAEAEA;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .page-title {
+        color: #F8F9FA;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .section-title {
+        color: #FFF;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .glassmorphism-form {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .form-title {
+        color: #EAEAEA;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .custom-table thead {
+        background: rgba(255, 255, 255, 0.2);
+        color: #FFF;
+        text-transform: uppercase;
+    }
+
+    .custom-table th, .custom-table td {
+        padding: 12px;
+        text-align: center;
+    }
+
+    .custom-table tbody tr {
+        background: rgba(255, 255, 255, 0.1);
+        color: #FFF;
+        border-radius: 10px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .custom-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.02);
+    }
+
+    .stylish-btn {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        border: none;
+        padding: 10px 18px; /* Adjusted for a normal-sized button */
+        font-size: 16px;
+        border-radius: 8px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s ease-in-out;
+    }
+
+    .stylish-btn:hover {
+        background: linear-gradient(45deg, #0056b3, #007bff);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+
+    .stylish-btn-edit {
+        background: rgba(255, 193, 7, 0.9);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        font-size: 14px;
+        border-radius: 6px;
+        transition: 0.3s ease-in-out;
+    }
+
+    .stylish-btn-edit:hover {
+        background: rgba(255, 193, 7, 1);
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+        transform: scale(1.1);
+    }
+
+    .stylish-btn-delete {
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        font-size: 14px;
+        border-radius: 6px;
+        transition: 0.3s ease-in-out;
+    }
+
+    .stylish-btn-delete:hover {
+        background: rgba(220, 53, 69, 1);
+        box-shadow: 0 0 10px rgba(220, 53, 69, 0.3);
+        transform: scale(1.1);
+    }
+
+    .no-data {
+        color: #DDD;
+        font-size: 16px;
+        font-weight: bold;
+    }
+</style>
+
 {% endblock %}

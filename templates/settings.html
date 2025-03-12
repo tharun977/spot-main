@@ -3,34 +3,133 @@
 {% block title %}Settings{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <h2 class="mb-4 text-center">Account Settings</h2>
-    
-    <div class="card p-4 shadow-lg">
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="glassmorphism-card p-4">
+        <h2 class="text-center page-title">Account Settings</h2>
+        
         <form method="post">
             {% csrf_token %}
+
             <div class="mb-3">
-                <label for="username" class="form-label">Username:</label>
-                <input type="text" class="form-control" id="username" value="{{ user.username }}" disabled>
-            </div>
-            
-            <div class="mb-3">
-                <label for="email" class="form-label">Email:</label>
-                <input type="email" class="form-control" id="email" value="{{ user.email }}" disabled>
+                <label class="form-label">Username:</label>
+                <input type="text" class="form-control stylish-input" value="{{ user.username }}" disabled>
             </div>
 
             <div class="mb-3">
-                <label for="role" class="form-label">Role:</label>
-                <input type="text" class="form-control" id="role" 
+                <label class="form-label">Email:</label>
+                <input type="email" class="form-control stylish-input" value="{{ user.email }}" disabled>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Role:</label>
+                <input type="text" class="form-control stylish-input" 
                        value="{% if user.is_superuser %}Admin{% else %}Staff{% endif %}" 
                        disabled>
             </div>
 
-            <div class="text-center">
-                <a href="{% url 'profile' %}" class="btn btn-primary">Edit Profile</a>
-                <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'profile' %}" class="btn stylish-btn">Edit Profile</a>
+                <a href="{% url 'logout' %}" class="btn stylish-btn-danger">Logout</a>
             </div>
         </form>
     </div>
 </div>
+
+<!-- Custom CSS -->
+<style>
+    /* Hide scrollbar */
+    ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+    }
+
+    body {
+        overflow-y: auto; /* Allow scrolling but hide scrollbar */
+        -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+        scrollbar-width: none; /* Hide scrollbar for Firefox */
+    }
+    /* Background */
+    body {
+        background: linear-gradient(135deg, #c1c3d4, #23177d);
+        color: #EAEAEA;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* Glassmorphism Card */
+    .glassmorphism-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+        width: 400px;
+        text-align: center;
+    }
+
+    /* Page Title */
+    .page-title {
+        color: #F8F9FA;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Stylish Input */
+    .stylish-input {
+        background: rgba(255, 255, 255, 0.2);
+        color: rgb(65, 61, 61);
+        border: none;
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .stylish-input:focus {
+        outline: none;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Stylish Buttons */
+    .stylish-btn {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        border: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s ease-in-out;
+        text-decoration: none;
+    }
+
+    .stylish-btn:hover {
+        background: linear-gradient(45deg, #0056b3, #007bff);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+
+    .stylish-btn-danger {
+        background: linear-gradient(45deg, #dc3545, #a71d2a);
+        border: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s ease-in-out;
+        text-decoration: none;
+    }
+
+    .stylish-btn-danger:hover {
+        background: linear-gradient(45deg, #a71d2a, #dc3545);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+        .glassmorphism-card {
+            width: 90%;
+        }
+    }
+</style>
 {% endblock %}

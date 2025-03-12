@@ -3,30 +3,109 @@
 {% block title %}Contact Us{% endblock %}
 
 {% block content %}
-<!-- Add CSS to hide the scrollbar but allow scrolling -->
+
+<!-- Custom Styles -->
 <style>
-    /* Hide the scrollbar but still allow scrolling */
+    /* Hide scrollbar but allow scrolling */
     html, body {
-        overflow: hidden;
+        overflow-y: auto;
     }
 
-    body::-webkit-scrollbar {
-        display: none;
+    ::-webkit-scrollbar {
+        width: 0;
+        background: transparent;
     }
 
+    /* Smooth Gradient Background */
     body {
-        -ms-overflow-style: none;  /* For Internet Explorer 10+ */
-        scrollbar-width: none;  /* For Firefox */
+        background: linear-gradient(135deg, #c1c3d4, #23177d);
+        color: #EAEAEA;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* Page Title */
+    .page-title {
+        text-align: center;
+        font-size: 28px;
+        font-weight: bold;
+        color: #F8F9FA;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Frosted Glass Form */
+    .glassmorphism-form {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #EAEAEA;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #FFF;
+        padding: 12px;
+        border-radius: 8px;
+        transition: 0.3s ease-in-out;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+
+    /* Submit Button */
+    .stylish-btn {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        border: none;
+        padding: 12px;
+        font-size: 18px;
+        border-radius: 8px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s ease-in-out;
+        width: 100%;
+    }
+
+    .stylish-btn:hover {
+        background: linear-gradient(45deg, #0056b3, #007bff);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+
+    /* Contact Info */
+    .contact-info {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .contact-info p {
+        font-size: 16px;
+        color: #EAEAEA;
+    }
+
+    .contact-info i {
+        color: #FFD700;
+        margin-right: 5px;
     }
 </style>
 
+<!-- Page Content -->
 <div class="container my-5">
-    <h2 class="text-center">Contact Us</h2>
+    <h2 class="page-title">Contact Us</h2>
     <p class="text-center">We'd love to hear from you! Please fill out the form below with any questions or feedback.</p>
-    
+
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow-lg p-4">
+            <div class="card glassmorphism-form p-4">
                 <form>
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
@@ -40,13 +119,13 @@
                         <label for="message" class="form-label">Message</label>
                         <textarea class="form-control" id="message" rows="4" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Send Message</button>
+                    <button type="submit" class="btn stylish-btn">Send Message</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="text-center mt-4">
+    <div class="contact-info">
         <p><i class="fas fa-envelope"></i> Email: support@parking.com</p>
         <p><i class="fas fa-phone"></i> Phone: +1234567890</p>
     </div>

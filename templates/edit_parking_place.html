@@ -4,30 +4,91 @@
 {% block title %}Edit Parking Place{% endblock %}
 
 {% block content %}
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="glassmorphism-form p-4 w-100">
+        <h2 class="text-center mb-4">Edit Parking Place</h2>
 
-<h2 class="my-4 text-center">Edit Parking Place</h2>
+        <form method="post">
+            {% csrf_token %}
 
-<form method="post">
-    {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6">{{ form.place_name|as_crispy_field }}</div>
+                <div class="col-md-6">{{ form.location|as_crispy_field }}</div>
+                <div class="col-md-4">{{ form.status|as_crispy_field }}</div>
+                <div class="col-md-4">{{ form.num_lots|as_crispy_field }}</div>
+            </div>
 
-    <div class="card p-4">
-        <h4>Parking Place Details</h4>
-        <div class="row g-3">
-            <div class="col-md-6">{{ form.place_name|as_crispy_field }}</div>
-            <div class="col-md-6">{{ form.location|as_crispy_field }}</div>
-            <div class="col-md-4">{{ form.status|as_crispy_field }}</div>
-            <div class="col-md-4">{{ form.num_lots|as_crispy_field }}</div>
-        </div>
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button type="submit" class="btn stylish-btn-primary">Save Changes</button>
+                <a href="{% url 'manage_parking_places' %}" class="btn stylish-btn-secondary">Cancel</a>
+            </div>
+        </form>
     </div>
+</div>
 
-    <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
-    <a href="{% url 'manage_parking_places' %}" class="btn btn-secondary mt-3">Cancel</a>
-</form>
-
+<!-- Custom Styling -->
 <style>
-    /* Hide Scrollbar */
+    /* Hide scrollbar */
     ::-webkit-scrollbar {
-        display: none;
+        width: 0px;
+        background: transparent;
+    }
+
+    body {
+        overflow-y: auto; /* Allow scrolling but hide scrollbar */
+        -ms-overflow-style: none; /* Hide scrollbar for Internet Explorer and Edge */
+        scrollbar-width: none; /* Hide scrollbar for Firefox */
+    }
+    
+    body {
+        background: linear-gradient(135deg, #2b5876, #4e4376);
+        color: #EAEAEA;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .glassmorphism-form {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .stylish-btn-primary {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s ease-in-out;
+    }
+
+    .stylish-btn-primary:hover {
+        background: linear-gradient(45deg, #0056b3, #007bff);
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+        transform: scale(1.05);
+    }
+
+    .stylish-btn-secondary {
+        background: rgba(108, 117, 125, 0.9);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: 0.3s ease-in-out;
+    }
+
+    .stylish-btn-secondary:hover {
+        background: rgba(108, 117, 125, 1);
+        box-shadow: 0 0 10px rgba(108, 117, 125, 0.3);
+        transform: scale(1.05);
     }
 </style>
 

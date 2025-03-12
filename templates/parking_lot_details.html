@@ -3,109 +3,275 @@
 {% block title %}Parking Details{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Parking Details</h2>
+<div class="container mt-5">
+    <h2 class="text-center fw-bold page-title">Parking Details</h2>
 
     <!-- Add Parking Form -->
-    <div class="mb-4">
+    <div class="card glassmorphism-form p-4 my-4">
+        <h4 class="form-title">Add Parking</h4>
         <form method="POST" action="{% url 'add_parking' lot_id=parking_lot.id %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary mt-2">Add Parking</button>
-        </form>        
+            <button type="submit" class="btn stylish-btn w-100 mt-3">Add Parking</button>
+        </form>
     </div>
 
     <!-- Parking Details Table -->
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Parking ID</th>
-                <th>Vehicle Reg No</th>
-                <th>Mobile Number</th>
-                <th>Vehicle Type</th>
-                <th>In Time</th>
-                <th>Out Time</th>
-                <th>Parking Duration</th>
-                <th>Payment Amount</th>
-                <th>Payment Status</th>
-                <th>Occupied By</th>
-                <th>Authorized By</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for parking_detail in parking_details %}
-            <tr>
-                <td>{{ parking_detail.parking_id }}</td>
-                <td>{{ parking_detail.vehicle_reg_no }}</td>
-                <td>{{ parking_detail.mobile_number }}</td>
-                <td>{{ parking_detail.vehicle_type }}</td>
-                <td>{{ parking_detail.in_time }}</td>
+    <h3 class="section-title mt-4">Parking Records</h3>
+    <div class="table-responsive">
+        <table class="table custom-table">
+            <thead>
+                <tr>
+                    <th>Parking ID</th>
+                    <th>Vehicle Reg No</th>
+                    <th>Mobile Number</th>
+                    <th>Vehicle Type</th>
+                    <th>In Time</th>
+                    <th>Out Time</th>
+                    <th>Parking Duration</th>
+                    <th>Payment Amount</th>
+                    <th>Payment Status</th>
+                    <th>Occupied By</th>
+                    <th>Authorized By</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for parking_detail in parking_details %}
+                <tr>
+                    <td>{{ parking_detail.parking_id }}</td>
+                    <td>{{ parking_detail.vehicle_reg_no }}</td>
+                    <td>{{ parking_detail.mobile_number }}</td>
+                    <td>{{ parking_detail.vehicle_type }}</td>
+                    <td>{{ parking_detail.in_time }}</td>
 
-                <!-- Update Out Time -->
-                <td>
-                    {% if parking_detail.out_time %}
-                        {{ parking_detail.out_time }}
-                    {% else %}
-                        <form method="POST" action="{% url 'update_out_time' parking_detail.parking_id %}">
+                    <!-- Update Out Time -->
+                    <td>
+                        {% if parking_detail.out_time %}
+                            {{ parking_detail.out_time }}
+                        {% else %}
+                            <form method="POST" action="{% url 'update_out_time' parking_detail.parking_id %}">
+                                {% csrf_token %}
+                                <input type="datetime-local" name="out_time" required class="form-control">
+                                <button type="submit" class="btn stylish-btn-edit mt-1">Update</button>
+                            </form>
+                        {% endif %}
+                    </td>
+
+                    <!-- Parking Duration -->
+                    <td>
+                        {% if parking_detail.parking_duration %}
+                            {{ parking_detail.parking_duration }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <!-- Payment Amount (With ₹ Symbol) -->
+                    <td>
+                        {% if parking_detail.payment_amount %}
+                            ₹{{ parking_detail.payment_amount }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <!-- Payment Status & Pay Button -->
+                    <td>
+                        {% if parking_detail.payment_status %}
+                            <span class="badge status-active">✅ Paid</span>
+                        {% else %}
+                            <form method="POST" action="{% url 'make_payment' parking_detail.parking_id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn stylish-btn">Pay Now</button>
+                            </form>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ parking_detail.occupied_by }}</td>
+
+                    <!-- Display Authorized By Properly -->
+                    <td>
+                        {% if parking_detail.authorized_by %}
+                            {{ parking_detail.authorized_by.get_full_name|default:parking_detail.authorized_by.username }}
+                        {% else %}
+                            Not Assigned
+                        {% endif %}
+                    </td>
+
+                    <!-- Actions Column -->
+                    <td>
+                        <form method="POST" action="{% url 'delete_parking' parking_detail.parking_id %}" class="d-inline" onsubmit="return confirmDelete();">
                             {% csrf_token %}
-                            <input type="datetime-local" name="out_time" required class="form-control">
-                            <button type="submit" class="btn btn-sm btn-warning mt-1">Update</button>
+                            <button type="submit" class="btn stylish-btn-delete">Delete</button>
                         </form>
-                    {% endif %}
-                </td>
-
-                <!-- Parking Duration -->
-                <td>
-                    {% if parking_detail.parking_duration %}
-                        {{ parking_detail.parking_duration }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-
-                <!-- Payment Amount (With ₹ Symbol) -->
-                <td>
-                    {% if parking_detail.payment_amount %}
-                        ₹{{ parking_detail.payment_amount }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-
-                <!-- Payment Status & Pay Button -->
-                <td>
-                    {% if parking_detail.payment_status %}
-                        ✅ Paid
-                    {% else %}
-                        <form method="POST" action="{% url 'make_payment' parking_detail.parking_id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-success">Pay Now</button>
-                        </form>
-                    {% endif %}
-                </td>
-
-                <td>{{ parking_detail.occupied_by }}</td>
-
-                <!-- Display Authorized By Properly -->
-                <td>
-                    {% if parking_detail.authorized_by %}
-                        {{ parking_detail.authorized_by.get_full_name|default:parking_detail.authorized_by.username }}
-                    {% else %}
-                        Not Assigned
-                    {% endif %}
-                </td>
-
-                <!-- Actions Column -->
-                <td>
-                    <a href="{% url 'delete_parking' parking_detail.parking_id %}" class="btn btn-sm btn-danger">Delete</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="12" class="text-center">No parking details available.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12" class="no-data text-center">No parking details available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<script>
+    function confirmDelete() {
+        return confirm("Do you want to delete this parking record?");
+    }
+</script>
+
+<!-- Custom Styling -->
+<style>
+    /* Hide scrollbar */
+    ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+    }
+
+    body {
+        overflow-y: auto; /* Allow scrolling but hide scrollbar */
+        -ms-overflow-style: none; /* Hide scrollbar for Internet Explorer and Edge */
+        scrollbar-width: none; /* Hide scrollbar for Firefox */
+    }
+
+    body {
+        background: linear-gradient(135deg, #c1c3d4, #23177d);
+        color: #EAEAEA;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .page-title {
+        color: #F8F9FA;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .section-title {
+        color: #FFF;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .glassmorphism-form {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .form-title {
+        color: #EAEAEA;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .custom-table thead {
+        background: rgba(255, 255, 255, 0.2);
+        color: #FFF;
+        text-transform: uppercase;
+    }
+
+    .custom-table th, .custom-table td {
+        padding: 12px;
+        text-align: center;
+    }
+
+    .custom-table tbody tr {
+        background: rgba(255, 255, 255, 0.1);
+        color: #FFF;
+        border-radius: 10px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .custom-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.02);
+    }
+
+    .status-active {
+        background-color: #28a745;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 8px;
+    }
+
+    .status-inactive {
+        background-color: #dc3545;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 8px;
+    }
+
+    .stylish-btn {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        border: none;
+        padding: 8px 16px; /* Reduce padding for a smaller button */
+        font-size: 16px; /* Decrease font size */
+        border-radius: 6px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s ease-in-out;
+        width: auto; /* Adjust width based on content */
+        display: block;
+        margin: 0 auto; /* Center the button */
+    }
+
+
+    .stylish-btn:hover {
+        background: linear-gradient(45deg, #0056b3, #007bff);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+
+    .stylish-btn-edit {
+        background: rgba(255, 193, 7, 0.9);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        font-size: 14px;
+        border-radius: 6px;
+        transition: 0.3s ease-in-out;
+    }
+
+    .stylish-btn-edit:hover {
+        background: rgba(255, 193, 7, 1);
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+        transform: scale(1.1);
+    }
+
+    .stylish-btn-delete {
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        font-size: 14px;
+        border-radius: 6px;
+        transition: 0.3s ease-in-out;
+    }
+
+    .stylish-btn-delete:hover {
+        background: rgba(220, 53, 69, 1);
+        box-shadow: 0 0 10px rgba(220, 53, 69, 0.3);
+        transform: scale(1.1);
+    }
+
+    .no-data {
+        color: #DDD;
+        font-size: 16px;
+        font-weight: bold;
+    }
+</style>
+
 {% endblock %}

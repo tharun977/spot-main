@@ -1,92 +1,142 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - SPOT{% endblock %}
 
 {% block content %}
+<!-- Fullscreen Video Background -->
+<div id="intro">
+    <video id="bg-video" playsinline autoplay muted loop>
+        <source src="{% static 'videos/login_bg2.mp4' %}" type="video/mp4">
+    </video>
+
+    <!-- Dark Overlay -->
+    <div class="mask">
+        <div class="container d-flex align-items-center justify-content-center text-center h-100">
+            <div class="login-card">
+                <div class="card glassmorphism p-4">
+                    <div class="card-body text-center">
+                        <h3 class="mb-4 text-light fw-bold">Sign In</h3>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-floating mb-3">
+                                <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" class="form-control glass-input" placeholder="Username">
+                                <label for="{{ form.username.id_for_label }}">Username</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" class="form-control glass-input" placeholder="Password">
+                                <label for="{{ form.password.id_for_label }}">Password</label>
+                            </div>
+                            <button type="submit" class="btn glass-btn w-100">Sign in</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
 <style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(to right, #6a11cb, #2575fc);
-}
+    /* Fullscreen Video Background */
+    #intro {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
 
-.login-container {
-    min-height: 100vh; /* Keeps it centered properly */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    #bg-video {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        transform: translate(-50%, -50%);
+        object-fit: cover;
+    }
 
-  .login-card {
-    max-width: 450px;
-    width: 100%;
-    border-radius: 1rem;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  }
+    /* Dark Gradient Overlay */
+    .mask {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(0, 0, 0, 0.7), rgba(0, 82, 204, 0.4));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-  .login-img {
-    max-width: 100%;
-    height: auto;
-  }
+    /* Frosted Glass Effect */
+    .glassmorphism {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
 
-  .form-floating label {
-    padding-left: 10px;
-  }
+    /* Centered Login Card */
+    .login-card {
+        max-width: 450px;
+        width: 100%;
+        padding: 20px;
+    }
 
-  .form-floating input {
-    height: 50px;
-    padding-left: 15px;
-  }
+    /* Transparent Input Fields */
+    .glass-input {
+        height: 50px;
+        padding-left: 15px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .glass-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .glass-input:focus {
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        outline: none;
+    }
+
+    /* Label Styling */
+    .form-floating label {
+        color: rgba(255, 255, 255, 0.8);
+        padding-left: 10px;
+    }
+
+    /* Stylish Button */
+    .glass-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 12px;
+        font-size: 18px;
+        border-radius: 8px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s ease-in-out;
+        backdrop-filter: blur(12px);
+    }
+
+    .glass-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
+    }
 </style>
 
-<section class="vh-100 login-container">
-  <div class="container py-5 h-100">
-    <div class="row d-flex align-items-center justify-content-center h-100">
-      <div class="col-md-8 col-lg-7 col-xl-6">
-        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
-          class="img-fluid login-img" alt="Phone image">
-      </div>
-      <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-        <div class="card shadow-lg border-0 login-card">
-          <div class="card-body p-5 text-center">
-
-            <h3 class="mb-4 text-primary fw-bold">Sign In</h3>
-
-            <form method="post">
-              {% csrf_token %}
-
-              <div class="form-floating mb-3">
-                <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" class="form-control" placeholder="Username">
-                <label for="{{ form.username.id_for_label }}">Username</label>
-              </div>
-
-              <div class="form-floating mb-3">
-                <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" class="form-control" placeholder="Password">
-                <label for="{{ form.password.id_for_label }}">Password</label>
-              </div>
-
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="rememberMe">
-                  <label class="form-check-label" for="rememberMe">Remember me</label>
-                </div>
-              </div>
-
-              <button type="submit" class="btn btn-primary btn-lg w-100">Sign in</button>
-
-            </form>
-
-            
-              <style>
-                              /* Hide Scrollbar */
-                  ::-webkit-scrollbar {
-                      display: none;
-                  }
-              </style>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 {% endblock %}

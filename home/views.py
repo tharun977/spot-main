@@ -252,7 +252,7 @@ def delete_parking_place(request, pk):
         parking_place.delete()
         return redirect('manage_parking_places')
     
-
+@login_required
 def manage_parking_fees(request):
     """ View for managing parking fees separately """
     if request.method == 'POST':
@@ -271,6 +271,30 @@ def manage_parking_fees(request):
         {'fee_form': fee_form, 'parking_fees': parking_fees}
     )
 
+@login_required
+def edit_parking_fee(request, pk):
+    parking_fee = get_object_or_404(ParkingFee, pk=pk)
+    
+    if request.method == "POST":
+        form = ParkingFeeForm(request.POST, instance=parking_fee)
+        if form.is_valid():
+            form.save()
+            return redirect('manage_parking_fees')
+    else:
+        form = ParkingFeeForm(instance=parking_fee)
+    
+    return render(request, 'edit_parking_fee.html', {'form': form})
+
+@login_required
+def delete_parking_fee(request, pk):
+    parking_fee = get_object_or_404(ParkingFee, pk=pk)
+
+    if request.method == "POST":
+        parking_fee.delete()
+        messages.success(request, "Parking fee deleted successfully!")
+        return redirect('manage_parking_fees')  # Redirect after deletion
+
+    return render(request, 'delete_parking_fee.html', {'parking_fee': parking_fee})
 
 # ========================== PARKING LOTS ========================== #
 
