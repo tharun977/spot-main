@@ -4,25 +4,22 @@
 
 {% block content %}
 <div class="container my-4">
-    <h2>{{ parking_place.place_name }} - Parking Lots</h2>
+    <h2 class="text-center">{{ parking_place.place_name }} - Parking Lots</h2>
 
-    
     <!-- Showcase Legend -->
     <div class="showcase d-flex justify-content-center align-items-center">
         <div class="seat bg-success me-2"></div> <small class="me-3">Available</small>
         <div class="seat bg-danger me-2"></div> <small>Occupied</small>
     </div>
 
-
-     <!-- Parking Grid -->
+    <!-- Parking Grid -->
     <div class="container parking-area mt-4">
         <div class="screen"></div>
         <div class="d-flex flex-wrap justify-content-center">
             {% for lot in parking_lots %}
-                <a href="{% url 'parking_lot_details' lot.id %}">
+                <a href="{% url 'parking_lot_details' lot.id %}" class="text-decoration-none">
                     <div class="seat parking-lot {% if lot.status %}occupied{% else %}available{% endif %}" 
-                        data-lot-id="{{ lot.id }}" data-price="10"
-                        {% if lot.status %}style="background-color: #ff4d4d !important;"{% endif %}">
+                        data-lot-id="{{ lot.id }}" data-price="10">
                         <strong>{{ lot.lot_number }}</strong>
                     </div>
                 </a>
@@ -32,63 +29,72 @@
         </div>
     </div>
 
-   
-     <!-- Buttons -->
-     {% if request.user.is_superuser %}
+    <!-- Buttons -->
+    {% if request.user.is_superuser %}
     <div class="d-flex justify-content-center mt-4">
-        <a href="{% url 'add_parking_lots' parking_place.id %}" class="btn btn-primary mx-2">Add Parking Lots</a>
-        <a href="{% url 'delete_parking_lots' parking_place.id %}" class="btn btn-danger mx-2">Manage Parking Lots</a>
+        <a href="{% url 'add_parking_lots' parking_place.id %}" class="btn glass-btn mx-2">Add Parking Lots</a>
+        <a href="{% url 'delete_parking_lots' parking_place.id %}" class="btn glass-btn-danger mx-2">Manage Parking Lots</a>
     </div>
     {% endif %}
 </div>
 
-
-
 <style>
-     /* Hide Scrollbar */
-     ::-webkit-scrollbar {
+    /* Hide Scrollbar */
+    ::-webkit-scrollbar {
         display: none;
     }
-    .container {
-        perspective: 1000px;
-        margin-top: 1px; /* Adjust this value to push content down */
-        margin-bottom: -2px;
+
+    /* Background */
+    body {
+        background: linear-gradient(135deg, rgba(30, 60, 114, 0.8), rgba(42, 82, 152, 0.8)), 
+                    url('https://source.unsplash.com/1600x900/?parking,city');
+        background-size: cover;
+        background-attachment: fixed;
+        color: white;
     }
 
-     /* Parking Lot Layout */
-     .parking-area {
-        background: #e9ecef;
+    .container {
+        perspective: 1000px;
+    }
+
+    /* Parking Lot Layout */
+    .parking-area {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(12px);
         padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     /* Seat Styling */
     .seat {
-        height: 40px;
-        width: 40px;
-        margin: 5px;
-        border-radius: 5px;
+        height: 50px;
+        width: 50px;
+        margin: 6px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: bold;
         cursor: pointer;
-        transition: transform 0.2s ease-in-out;
+        transition: transform 0.2s ease-in-out, background 0.3s ease;
+        box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
     }
 
     .seat:hover {
         transform: scale(1.1);
+        box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
     }
 
     .seat.available {
-        background-color: #28a745;
+        background: rgba(40, 167, 69, 0.8);
+        backdrop-filter: blur(5px);
     }
 
     .seat.occupied {
-        background-color: #ff4d4d;
+        background: rgba(255, 77, 77, 0.8);
         pointer-events: none;
     }
 
@@ -104,18 +110,46 @@
 
     /* Screen Placeholder */
     .screen {
-        background-color: #fff;
+        background: rgba(255, 255, 255, 0.2);
         height: 50px;
         width: 100%;
         margin: 15px 0;
         transform: rotateX(-45deg);
         box-shadow: 0 3px 10px rgba(255, 255, 255, 0.7);
+        border-radius: 5px;
     }
 
-    /* Buttons */
-    .btn {
+    /* Glassmorphism Buttons */
+    .glass-btn {
+        background: rgba(0, 123, 255, 0.2);
+        border: 1px solid rgba(0, 123, 255, 0.6);
+        color: white;
+        border-radius: 8px;
         padding: 10px 20px;
         font-size: 16px;
+        text-transform: uppercase;
+        transition: background 0.3s ease, transform 0.2s ease-in-out;
+    }
+
+    .glass-btn:hover {
+        background: rgba(0, 123, 255, 0.4);
+        transform: scale(1.05);
+    }
+
+    .glass-btn-danger {
+        background: rgba(255, 77, 77, 0.2);
+        border: 1px solid rgba(255, 77, 77, 0.6);
+        color: white;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 16px;
+        text-transform: uppercase;
+        transition: background 0.3s ease, transform 0.2s ease-in-out;
+    }
+
+    .glass-btn-danger:hover {
+        background: rgba(255, 77, 77, 0.4);
+        transform: scale(1.05);
     }
 </style>
 

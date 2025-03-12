@@ -41,6 +41,8 @@ urlpatterns = [
     path('delete_staff/<int:staff_id>/', delete_staff, name='delete_staff'),
 
     path('manage_parking_fees/', views.manage_parking_fees, name='manage_parking_fees'),
+    path('edit_parking_fee/<int:pk>/', views.edit_parking_fee, name='edit_parking_fee'),  
+    path('delete_parking_fee/<int:pk>/', views.delete_parking_fee, name='delete_parking_fee'),
 
     path('payments/', views.payments, name='payments'),
     path('about/', views.about, name='about'),

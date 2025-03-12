@@ -1,31 +1,99 @@
 {% extends 'base.html' %}
+
 {% block title %}Payments{% endblock %}
+
 {% block content %}
-<h2 class="my-4 text-center">Payments</h2>
-<table class="table table-striped table-bordered text-center">
-    <thead>
-        <tr>
-            <th>User</th>
-            <th>Parking ID</th>
-            <th>Amount Paid</th>
-            <th>Payment Method</th>
-            <th>Payment Date</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for payment in payments %}
-        <tr>
-            <td>{{ payment.user_id }}</td>
-            <td>{{ payment.parking_id }}</td>
-            <td>${{ payment.amount_paid }}</td>
-            <td>{{ payment.payment_method }}</td>
-            <td>{{ payment.payment_date }}</td>
-            <td>{{ payment.payment_status|yesno:"Completed,Pending" }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="6" class="text-center">No payments found.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="glassmorphism-table p-4 w-100">
+        <h2 class="text-center fw-bold mb-4">Payments</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>User</th>
+                        <th>Parking ID</th>
+                        <th>Amount Paid</th>
+                        <th>Payment Method</th>
+                        <th>Payment Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.user_id }}</td>
+                        <td>{{ payment.parking_id }}</td>
+                        <td>₹{{ payment.amount_paid }}</td>
+                        <td>{{ payment.payment_method }}</td>
+                        <td>{{ payment.payment_date }}</td>
+                        <td>
+                            <span class="{% if payment.payment_status %}text-success fw-bold{% else %}text-warning fw-bold{% endif %}">
+                                {{ payment.payment_status|yesno:"Completed,Pending" }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center fw-bold text-danger">No payments found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Styling -->
+<style>
+    /* Hide scrollbar */
+    ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+    }
+
+    body {
+        overflow-y: auto; /* Allow scrolling but hide scrollbar */
+        -ms-overflow-style: none; /* Hide scrollbar for Internet Explorer and Edge */
+        scrollbar-width: none; /* Hide scrollbar for Firefox */
+    }
+    
+    body {
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        color: #EAEAEA;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .glassmorphism-table {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+        max-width: 900px;
+        width: 100%;
+    }
+
+    .table {
+        color: #fff;
+    }
+
+    .table thead th {
+        background: rgba(0, 0, 0, 0.6);
+        color: #ffffff;
+    }
+
+    .table tbody tr td {
+        vertical-align: middle;
+    }
+
+    .text-success {
+        color: #28a745 !important;
+    }
+
+    .text-warning {
+        color: #ffc107 !important;
+    }
+</style>
+
 {% endblock %}

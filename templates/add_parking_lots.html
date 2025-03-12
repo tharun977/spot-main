@@ -1,20 +1,114 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block title %}Add Parking Lots{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <h2>Add Parking Lots for {{ parking_place.place_name }}</h2>
-    
-    <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="num_lots" class="form-label">Number of Lots:</label>
-            <input type="number" name="num_lots" id="num_lots" class="form-control" min="1" required>
-        </div>
-        <button type="submit" class="btn btn-success">Add Lots</button>
-    </form>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="glassmorphism-form p-4 w-100">
+        <h2 class="text-center fw-bold page-title">Add Parking Lots</h2>
 
-    <a href="{% url 'parking_lot_list' parking_place.id %}" class="btn btn-secondary mt-3">Back to Parking Lots</a>
+        <!-- Add Parking Lots Form -->
+        <div class="card glassmorphism-form p-4 my-4">
+            <h4 class="form-title text-center">Enter Number of Lots</h4>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="num_lots" class="form-label">Number of Lots:</label>
+                    <input type="number" name="num_lots" id="num_lots" class="form-control stylish-input" min="1" required>
+                </div>
+                <button type="submit" class="btn stylish-btn w-100 mt-3">Add Lots</button>
+            </form>
+        </div>
+
+        <!-- Back Button -->
+        <div class="d-flex justify-content-center">
+            <a href="{% url 'parking_lot_list' parking_place.id %}" class="btn stylish-btn-edit">Back to Parking Lots</a>
+        </div>
+    </div>
 </div>
+
+<!-- Custom Styling -->
+<style>
+    /* Hide scrollbar */
+    ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+    }
+
+    body {
+        background: linear-gradient(135deg, #c1c3d4, #23177d);
+        color: #EAEAEA;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .page-title {
+        color: #F8F9FA;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .glassmorphism-form {
+        background: rgba(255, 255, 255, 0.1);
+        max-width: 450px;
+        width: 100%;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    }
+
+    .form-title {
+        color: #EAEAEA;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .stylish-input {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        padding: 12px;
+        border-radius: 6px;
+        color: #FFF;
+        font-size: 16px;
+    }
+
+    .stylish-input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .stylish-btn {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        border: none;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 6px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s ease-in-out;
+    }
+
+    .stylish-btn:hover {
+        background: linear-gradient(45deg, #0056b3, #007bff);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+
+    .stylish-btn-edit {
+        background: rgba(255, 193, 7, 0.9);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 6px;
+        transition: 0.3s ease-in-out;
+    }
+
+    .stylish-btn-edit:hover {
+        background: rgba(255, 193, 7, 1);
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+        transform: scale(1.05);
+    }
+</style>
+
 {% endblock %}
