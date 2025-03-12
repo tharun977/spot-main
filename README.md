@@ -91,4 +91,4 @@ This project is **open-source** and available under the **MIT License**.
 
 ---
 
-👨‍💻 Developed by **Tharun Raman & Team**  
+👨‍💻 Developed by **Tharun Raman & Rohan Ravindran**  
