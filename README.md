@@ -21,8 +21,8 @@ SPOT is a **Django-based web application** designed to streamline parking manage
 
 ### 1️⃣ Clone the Repository  
 ```sh
-git clone https://github.com/your-username/SPOT.git
-cd SPOT
+git clone https://github.com/tharun977apot-main.git
+cd spot-main
 ```
 
 ### 2️⃣ Set Up a Virtual Environment  
