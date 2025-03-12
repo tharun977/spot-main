@@ -34,10 +34,12 @@
 
    
      <!-- Buttons -->
+     {% if request.user.is_superuser %}
     <div class="d-flex justify-content-center mt-4">
         <a href="{% url 'add_parking_lots' parking_place.id %}" class="btn btn-primary mx-2">Add Parking Lots</a>
         <a href="{% url 'delete_parking_lots' parking_place.id %}" class="btn btn-danger mx-2">Manage Parking Lots</a>
     </div>
+    {% endif %}
 </div>
 
 
