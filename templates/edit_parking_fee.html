@@ -1,28 +1,105 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}Edit Parking Fee{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="text-center">Edit Parking Fee</h2>
-    <div class="card p-4 shadow">
+<div class="container mt-5">
+    <h2 class="text-center fw-bold page-title">Edit Parking Fee</h2>
+    
+    <div class="card glassmorphism-form p-4 my-4">
+        <h4 class="form-title">Update Parking Fee</h4>
         <form method="post">
             {% csrf_token %}
-            <div class="mb-3">
-                <label for="id_parking_place" class="form-label">Parking Place</label>
-                {{ form.parking_place }}
+            <div class="row g-3">
+                <div class="col-md-6">{{ form.parking_place|as_crispy_field }}</div>
+                <div class="col-md-6">{{ form.vehicle_type|as_crispy_field }}</div>
+                <div class="col-md-6">{{ form.fee|as_crispy_field }}</div>
             </div>
-            <div class="mb-3">
-                <label for="id_vehicle_type" class="form-label">Vehicle Type</label>
-                {{ form.vehicle_type }}
-            </div>
-            <div class="mb-3">
-                <label for="id_fee" class="form-label">Fee (₹)</label>
-                {{ form.fee }}
-            </div>
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-            <a href="{% url 'manage_parking_fees' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn stylish-btn w-100 mt-3">Save Changes</button>
+            <a href="{% url 'manage_parking_fees' %}" class="btn stylish-btn-secondary w-100 mt-2">Cancel</a>
         </form>
     </div>
 </div>
+
+<!-- Custom CSS (Same as in manage_parking_fees.html) -->
+<style>
+    /* Hide scrollbar */
+    ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+    }
+
+    body {
+        overflow-y: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    /* Background Gradient */
+    body {
+        background: linear-gradient(135deg, #c1c3d4, #23177d);
+        color: #EAEAEA;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* Section Titles */
+    .page-title {
+        color: #F8F9FA;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .form-title {
+        color: #EAEAEA;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    /* Frosted Glass Effect */
+    .glassmorphism-form {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Stylish Buttons */
+    .stylish-btn {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        border: none;
+        padding: 12px;
+        font-size: 18px;
+        border-radius: 8px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s ease-in-out;
+    }
+
+    .stylish-btn:hover {
+        background: linear-gradient(45deg, #0056b3, #007bff);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+
+    .stylish-btn-secondary {
+        background: rgba(108, 117, 125, 0.9);
+        color: white;
+        border: none;
+        padding: 12px;
+        font-size: 18px;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: 0.3s ease-in-out;
+        text-align: center;
+    }
+
+    .stylish-btn-secondary:hover {
+        background: rgba(108, 117, 125, 1);
+        box-shadow: 0 0 15px rgba(108, 117, 125, 0.2);
+        transform: scale(1.05);
+    }
+</style>
 {% endblock %}

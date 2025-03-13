@@ -100,7 +100,7 @@
                         <form method="POST" action="{% url 'delete_parking' parking_detail.parking_id %}" class="d-inline" onsubmit="return confirmDelete();">
                             {% csrf_token %}
                             <button type="submit" class="btn stylish-btn-delete">Delete</button>
-                        </form>
+                        </form>                        
                     </td>
                 </tr>
                 {% empty %}
