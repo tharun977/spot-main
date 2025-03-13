@@ -384,16 +384,24 @@ def update_out_time(request, parking_id):
 
 @login_required
 def make_payment(request, parking_id):
-    parking_obj = get_object_or_404(ParkingDetails, parking_id=parking_id)
+    parking_detail = get_object_or_404(ParkingDetails, parking_id=parking_id)
 
-    print("ParkingDetails Object:", parking_obj)  # Debugging
+    if request.method == "POST":
+        selected_payment_method = request.POST.get("payment_method")
 
-    # Ensure the related ParkingLot object exists and is correctly referenced
-    if hasattr(parking_obj, 'parking_lot'):
-        print("Related ParkingLot:", parking_obj.parking_lot)
-        print("ParkingLot Data:", parking_obj.parking_lot.__dict__)  # See available fields
+        if selected_payment_method:
+            # Mark payment as completed
+            parking_detail.payment_status = True
+            parking_detail.save()
+            
+            messages.success(request, "Payment successful! Your parking record has been updated.")
+            return redirect("parking_lot_details", lot_id=parking_detail.parking_lot.id)
 
-    return render(request, "payment_portal.html", {"parking": parking_obj})
+        else:
+            messages.error(request, "Please select a payment method.")
+
+    return render(request, "payment_portal.html", {"parking_detail": parking_detail})
+
 
 
 @login_required
