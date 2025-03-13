@@ -406,10 +406,10 @@ def make_payment(request, parking_id):
 
 @login_required
 def delete_parking(request, parking_id):
-    parking_entry = get_object_or_404(ParkingDetails, parking_id=parking_id)  # UUID
-    parking_entry.delete()
-    return redirect("parking_lot_list")  # Redirect to the list page after deletion
-
+    parking_detail = get_object_or_404(ParkingDetails, parking_id=parking_id)
+    parking_detail.delete()
+    messages.success(request, "Parking record deleted successfully.")
+    return redirect('parking_details')
 
 # ========================== PAYMENTS & LOGS ========================== #
 
