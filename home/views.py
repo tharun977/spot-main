@@ -194,13 +194,15 @@ def add_parking(request, lot_id):
             })
 
         # ✅ Create Parking Entry
+
         ParkingDetails.objects.create(
             parking_lot=parking_lot,
             vehicle_reg_no=vehicle_reg_no,
             mobile_number=mobile_number,
             vehicle_type=vehicle_type,
             occupied_by=occupied_by,
-            authorized_by=request.user
+            authorized_by=request.user,
+            payment_amount=0.00  # Add this line to prevent the NULL error
         )
 
         return redirect('parking_lot_details', lot_id=lot_id)
