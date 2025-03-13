@@ -14,9 +14,21 @@
     <style>
         /* General Body Style */
         body { 
-            font-family: 'Roboto', sans-serif; 
+            font-family: 'Nasalization', sans-serif; 
             scroll-behavior: smooth;
             padding-top: 8px;
+        }
+
+        /* Load the custom font for SPOT branding */
+        @font-face {
+            font-family: 'GameOfSquids';
+            src: url("{% static 'fonts/game-of-squids.ttf' %}") format('truetype');
+        }
+
+        /* Load the custom font for other content */
+        @font-face {
+            font-family: 'Nasalization';
+            src: url("{% static 'fonts/nasalization-rg.otf' %}") format('opentype');
         }
 
         /* Navbar Styling */
@@ -50,6 +62,12 @@
         .navbar-nav .nav-link:hover {
             background-color: rgba(152, 122, 122, 0.2);
             border-radius: 5px;
+        }
+
+        /* Apply the custom font to the "SPOT" branding */
+        .navbar-brand {
+            font-family: 'GameOfSquids', sans-serif;
+            font-weight: bold;
         }
 
         /* Theme Toggle Button */
@@ -124,74 +142,74 @@
     </div>
     {% endif %}
 
-        <!-- Navbar (Hidden on Login & Register Pages) -->
-        {% if request.resolver_match.url_name != 'login' %}
-        <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
-            <div class="container">
-                <a class="navbar-brand fw-bold me-4" href="{% url 'home' %}">SPOT</a>
-    
-                <!-- Navbar Toggle Button (For Mobile) -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-    
-                <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-                    <ul class="navbar-nav gap-3">
-                        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'manage_parking_places' %}">Parking Places</a></li>
-                        {% if user.is_authenticated and user.is_superuser %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'manage_staff_users' %}">Manage Staff</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'manage_parking_fees' %}">Parking Fees</a></li>
-                        {% endif %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'payments' %}">Payments</a></li>
-                    </ul>
-    
-                    <div class="d-flex align-items-center">
-                        <button id="theme-toggle" class="theme-toggle ms-4">
-                            <i class="fas fa-moon"></i>
-                        </button>
-    
-                        {% if user.is_authenticated %}
-                        {% load static %}
+    <!-- Navbar (Hidden on Login Page) -->
+    {% if request.resolver_match.url_name != 'login' %}
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
+        <div class="container">
+            <a class="navbar-brand fw-bold me-4" href="{% url 'home' %}">SPOT</a>
 
-                        <!-- Profile Dropdown -->
-                        <div class="dropdown ms-3">
-                            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{% if user.role == 'Admin' %}{% static 'images/default_user.png' %}{% else %}{{ user.get_avatar }}{% endif %}" 
-                                    alt="User Avatar" class="rounded-circle" height="40" width="40">
-                            </a>
-                            
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="{% url 'profile' %}">
-                                        <i class="fas fa-user-circle me-2"></i> My Profile
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="{% url 'settings' %}">
-                                        <i class="fas fa-cog me-2"></i> Settings
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center text-danger" href="{% url 'logout' %}">
-                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+            <!-- Navbar Toggle Button (For Mobile) -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                        {% else %}
-                        <a href="{% url 'login' %}" class="btn btn-outline-light ms-3">Login</a>
-                        {% endif %}
+            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                <ul class="navbar-nav gap-3">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'manage_parking_places' %}">Parking Places</a></li>
+                    {% if user.is_authenticated and user.is_superuser %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'manage_staff_users' %}">Manage Staff</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'manage_parking_fees' %}">Parking Fees</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'payments' %}">Payments</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <button id="theme-toggle" class="theme-toggle ms-4">
+                        <i class="fas fa-moon"></i>
+                    </button>
+
+                    {% if user.is_authenticated %}
+                    {% load static %}
+
+                    <!-- Profile Dropdown -->
+                    <div class="dropdown ms-3">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{% if user.role == 'Admin' %}{% static 'images/default_user.png' %}{% else %}{{ user.get_avatar }}{% endif %}" 
+                                alt="User Avatar" class="rounded-circle" height="40" width="40">
+                        </a>
+                        
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'profile' %}">
+                                    <i class="fas fa-user-circle me-2"></i> My Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'settings' %}">
+                                    <i class="fas fa-cog me-2"></i> Settings
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center text-danger" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
                     </div>
+
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-light ms-3">Login</a>
+                    {% endif %}
                 </div>
             </div>
-        </nav>
-        {% endif %}
-    
+        </div>
+    </nav>
+    {% endif %}
+
     <!-- Page Content -->
     <section class="container my-5" style="margin-top: 80px;">
         {% block content %}{% endblock %}
@@ -237,12 +255,11 @@
             localStorage.setItem("theme", document.body.classList.contains("dark-theme") ? "dark" : "light");
         });
 
-        // Load saved theme preference
+        // Load Theme from local storage
         if (localStorage.getItem("theme") === "dark") {
             document.body.classList.add("dark-theme");
             themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
         }
     </script>
-
 </body>
 </html>
