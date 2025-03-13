@@ -10,24 +10,24 @@
         <h4 class="form-title text-center">Select Payment Method</h4>
         <form method="POST">
             {% csrf_token %}
-
+            
             <div class="form-check my-3">
                 <input type="radio" id="cash" name="payment_method" value="Cash" class="form-check-input">
                 <label for="cash" class="form-check-label">Cash</label>
             </div>
-
+        
             <div class="form-check my-3">
                 <input type="radio" id="card" name="payment_method" value="Card" class="form-check-input">
                 <label for="card" class="form-check-label">Credit/Debit Card</label>
             </div>
-
+        
             <div class="form-check my-3">
                 <input type="radio" id="upi" name="payment_method" value="UPI" class="form-check-input">
                 <label for="upi" class="form-check-label">UPI (Google Pay, PhonePe, etc.)</label>
             </div>
-
+        
             <button type="submit" class="btn stylish-btn w-100 mt-3">Confirm Payment</button>
-        </form>
+        </form>        
     </div>
 </div>
 
