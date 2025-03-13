@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.utils.timezone import now
 from datetime import datetime 
 from django.utils.timezone import make_aware
-
+import uuid
 
 @login_required
 def home(request):
@@ -382,18 +382,21 @@ def update_out_time(request, parking_id):
 
 
 
+@login_required
 def make_payment(request, parking_id):
-    parking_entry = get_object_or_404(ParkingDetails, id=parking_id)
-    parking_fee = ParkingFee.objects.get(vehicle_type=parking_entry.vehicle_type)
+    parking_obj = get_object_or_404(ParkingDetails, parking_id=parking_id)
 
-    # Calculate Parking Duration and Payment Amount
-    duration_hours = ((parking_entry.out_time - parking_entry.in_time).total_seconds()) / 3600
-    parking_entry.payment_amount = round(duration_hours * parking_fee.rate_per_hour, 2)
-    parking_entry.payment_status = True
-    parking_entry.save()
-    
-    return redirect("parking_lot_details", lot_id=parking_entry.lot.id)
+    print("ParkingDetails Object:", parking_obj)  # Debugging
 
+    # Ensure the related ParkingLot object exists and is correctly referenced
+    if hasattr(parking_obj, 'parking_lot'):
+        print("Related ParkingLot:", parking_obj.parking_lot)
+        print("ParkingLot Data:", parking_obj.parking_lot.__dict__)  # See available fields
+
+    return render(request, "payment_portal.html", {"parking": parking_obj})
+
+
+@login_required
 def delete_parking(request, parking_id):
     parking_entry = get_object_or_404(ParkingDetails, parking_id=parking_id)  # UUID
     parking_entry.delete()

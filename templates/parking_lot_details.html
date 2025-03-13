@@ -80,10 +80,7 @@
                         {% if parking_detail.payment_status %}
                             <span class="badge status-active">✅ Paid</span>
                         {% else %}
-                            <form method="POST" action="{% url 'make_payment' parking_detail.parking_id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn stylish-btn">Pay Now</button>
-                            </form>
+                            <a href="{% url 'make_payment' parking_detail.parking_id %}" class="btn btn-primary">Pay Now</a>
                         {% endif %}
                     </td>
 

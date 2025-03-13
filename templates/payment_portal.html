@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center fw-bold page-title">Payment Portal</h2>
+
+    <div class="card glassmorphism-form p-4 my-4">
+        <h4 class="form-title text-center">Select Payment Method</h4>
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-check my-3">
+                <input type="radio" id="cash" name="payment_method" value="Cash" class="form-check-input">
+                <label for="cash" class="form-check-label">Cash</label>
+            </div>
+
+            <div class="form-check my-3">
+                <input type="radio" id="card" name="payment_method" value="Card" class="form-check-input">
+                <label for="card" class="form-check-label">Credit/Debit Card</label>
+            </div>
+
+            <div class="form-check my-3">
+                <input type="radio" id="upi" name="payment_method" value="UPI" class="form-check-input">
+                <label for="upi" class="form-check-label">UPI (Google Pay, PhonePe, etc.)</label>
+            </div>
+
+            <button type="submit" class="btn stylish-btn w-100 mt-3">Confirm Payment</button>
+        </form>
+    </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    body {
+        background: linear-gradient(135deg, #c1c3d4, #23177d);
+        color: #EAEAEA;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .page-title {
+        color: #F8F9FA;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .glassmorphism-form {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .form-title {
+        color: #EAEAEA;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .form-check-input {
+        margin-right: 8px;
+        transform: scale(1.2);
+    }
+
+    .stylish-btn {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        border: none;
+        padding: 10px 16px;
+        font-size: 18px;
+        border-radius: 6px;
+        font-weight: bold;
+        color: white;
+        transition: 0.3s ease-in-out;
+    }
+
+    .stylish-btn:hover {
+        background: linear-gradient(45deg, #0056b3, #007bff);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+</style>
+
+{% endblock %}

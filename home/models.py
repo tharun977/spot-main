@@ -87,10 +87,9 @@ class ParkingDetails(models.Model):
     out_time = models.DateTimeField(null=True, blank=True)
     payment_status = models.BooleanField(default=False)
     parking_duration = models.DurationField(null=True, blank=True)  # Stores timedelta
-    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # New field
-    occupied_by = models.CharField(max_length=255, blank=True, null=True)  
-    authorized_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Ensure this exists
-    parking_lot = models.ForeignKey(ParkingLot, on_delete=models.CASCADE)  # Ensure this exists
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    occupied_by = models.CharField(max_length=255, blank=True, null=True)
+    authorized_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def calculate_parking_duration(self):
         """Ensure both datetimes are timezone-aware before subtraction."""
@@ -117,8 +116,8 @@ class ParkingDetails(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.parking_lot.name} - {self.vehicle_reg_no}"
-
+        place_name = self.parking_lot.parking_place.place_name if self.parking_lot.parking_place else "Unknown"
+        return f"{place_name} - {self.vehicle_reg_no}"
 
     # def checkout(self):
     #     """Marks the parking as completed and calculates duration."""
