@@ -3,7 +3,7 @@
 
 SPOT is a **Django-based web application** designed to streamline parking management efficiently. The system enables users to register parking details, track vehicle entries and exits, calculate parking duration, process payments, and manage parking lot operations—all with a **modern, responsive UI**.  
 
-![Spot Banner](.[/public/images/snapdish-banner.png](https://github.com/tharun977/spot-main/blob/main/home/static/images/spot-banner.png))
+![Spot Banner]((https://github.com/tharun977/spot-main/blob/main/home/static/images/spot-banner.png))
 
 ## 📌 Features  
 ✅ **Add Parking Records** – Register vehicle details and assign parking spots.  
