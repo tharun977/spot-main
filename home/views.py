@@ -1,3 +1,4 @@
+from genericpath import exists
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import User, ParkingPlace, ParkingLot , PaymentDetails, VehicleType, AllowedVehicleType, ParkingFee , ParkingDetails
 from .forms import ParkingPlaceForm , ParkingFeeForm, LoginForm, ProfileUpdateForm,  StaffRegistrationForm , ParkingDetailsForm
@@ -8,6 +9,7 @@ from django.contrib import messages
 from django.utils.timezone import now
 from datetime import datetime 
 from django.utils.timezone import make_aware
+from django.db.models import OuterRef, Exists
 import uuid
 
 @login_required
@@ -303,9 +305,23 @@ def delete_parking_fee(request, pk):
 @login_required
 def parking_lot_list(request, parking_place_id):
     parking_place = get_object_or_404(ParkingPlace, id=parking_place_id)
-    parking_lots = ParkingLot.objects.filter(parking_place=parking_place)
-    allowed_vehicle_types = AllowedVehicleType.objects.filter(parking_place=parking_place).select_related('vehicle_type')
-
+    
+    # Get parking lots with occupancy status annotation
+    parking_lots = ParkingLot.objects.filter(parking_place=parking_place).annotate(
+        is_occupied=Exists(
+            ParkingDetails.objects.filter(
+                parking_lot=OuterRef('pk'),
+                out_time__isnull=True
+            )
+        )
+    )
+    
+    # Get allowed vehicle types (from your original code)
+    allowed_vehicle_types = AllowedVehicleType.objects.filter(
+        parking_place=parking_place
+    ).select_related('vehicle_type')
+    
+    # Add the return statement with context
     return render(request, 'parking_lot_list.html', {
         'parking_place': parking_place,
         'parking_lots': parking_lots,
